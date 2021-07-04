@@ -62,6 +62,16 @@ public class User implements Serializable {
   private Map<String, String> allTncAccepted;
   private String profileUserType;
   private String profileLocation;
+  private String profileDetails;
+
+  public String getProfileDetails() {
+    return profileDetails;
+  }
+
+  public void setProfileDetails(Map profileDetails) {
+    //if(profileDetails!=null)
+      this.profileDetails = profileDetails.toString();
+  }
 
   public Map<String, String> getAllTncAccepted() {
     return allTncAccepted;

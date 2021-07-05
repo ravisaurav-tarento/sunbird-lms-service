@@ -9,6 +9,7 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.sunbird.user.profile.ProfileUtil;
 
 /**
  * @desc POJO class for User
@@ -69,8 +70,12 @@ public class User implements Serializable {
   }
 
   public void setProfileDetails(Map profileDetails) {
-    //if(profileDetails!=null)
-      this.profileDetails = profileDetails.toString();
+    try{
+      ProfileUtil.appendIdToRefenceObjects(profileDetails);
+      this.profileDetails = new ObjectMapper().writeValueAsString(profileDetails);
+    }catch (Exception e){
+      e.printStackTrace();
+    }
   }
 
   public Map<String, String> getAllTncAccepted() {

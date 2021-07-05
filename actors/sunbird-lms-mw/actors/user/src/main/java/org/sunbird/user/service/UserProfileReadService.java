@@ -86,7 +86,6 @@ public class UserProfileReadService {
     result.putAll(Util.getUserDefaultValue());
     //Added the profiledetails translation
     result.put(JsonKey.PROFILE_DETAILS, ProfileUtil.toMap(result.get(JsonKey.PROFILE_DETAILS).toString()));
-    result.remove(JsonKey.PROFILE_DETAILS);
     Map<String, Object> rootOrg =
         orgDao.getOrgById(
             (String) result.get(JsonKey.ROOT_ORG_ID), actorMessage.getRequestContext());

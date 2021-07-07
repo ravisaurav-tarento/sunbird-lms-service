@@ -37,6 +37,7 @@ import org.sunbird.helper.CassandraConnectionMngrFactory;
 import org.sunbird.helper.ServiceFactory;
 import org.sunbird.notification.sms.provider.ISmsProvider;
 import org.sunbird.notification.utils.SMSFactory;
+import org.sunbird.user.profile.ProfileUtil;
 import scala.concurrent.Future;
 
 /**
@@ -696,6 +697,7 @@ public final class Util {
           "Util:getUserProfile: User data not available to save in ES for userId : " + userId);
     }
     userDetails.put(JsonKey.USERNAME, username);
+    userDetails.put(JsonKey.PROFILE_DETAILS, ProfileUtil.toMap(userDetails.get(JsonKey.PROFILE_DETAILS).toString()));
     return userDetails;
   }
 

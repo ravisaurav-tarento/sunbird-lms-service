@@ -45,6 +45,7 @@ import org.sunbird.user.dao.UserRoleDao;
 import org.sunbird.user.dao.impl.UserDaoImpl;
 import org.sunbird.user.dao.impl.UserOrgDaoImpl;
 import org.sunbird.user.dao.impl.UserRoleDaoImpl;
+import org.sunbird.user.profile.ProfileUtil;
 import org.sunbird.user.service.impl.UserExternalIdentityServiceImpl;
 import org.sunbird.user.service.impl.UserServiceImpl;
 import org.sunbird.user.util.UserUtil;
@@ -83,6 +84,8 @@ public class UserProfileReadService {
         validateUserIdAndGetUserDetails(userId, actorMessage.getRequestContext());
     appendUserTypeAndLocation(result, actorMessage);
     result.putAll(Util.getUserDefaultValue());
+    //Added the profiledetails translation
+    result.put(JsonKey.PROFILE_DETAILS, ProfileUtil.toMap(result.get(JsonKey.PROFILE_DETAILS).toString()));
     Map<String, Object> rootOrg =
         orgDao.getOrgById(
             (String) result.get(JsonKey.ROOT_ORG_ID), actorMessage.getRequestContext());
@@ -156,6 +159,7 @@ public class UserProfileReadService {
 
     Response response = new Response();
     response.put(JsonKey.RESPONSE, result);
+
     return response;
   }
 

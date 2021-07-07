@@ -69,11 +69,9 @@ import org.sunbird.user.dao.UserOrgDao;
 import org.sunbird.user.dao.UserSelfDeclarationDao;
 import org.sunbird.user.dao.impl.UserOrgDaoImpl;
 import org.sunbird.user.dao.impl.UserSelfDeclarationDaoImpl;
-import org.sunbird.user.service.AssociationMechanism;
-import org.sunbird.user.service.UserLookupService;
-import org.sunbird.user.service.UserRoleService;
-import org.sunbird.user.service.UserService;
+import org.sunbird.user.service.*;
 import org.sunbird.user.service.impl.UserLookUpServiceImpl;
+import org.sunbird.user.service.impl.UserProfileService;
 import org.sunbird.user.service.impl.UserRoleServiceImpl;
 import org.sunbird.user.service.impl.UserServiceImpl;
 import org.sunbird.user.util.UserActorOperations;
@@ -100,6 +98,8 @@ import scala.concurrent.Future;
 public class UserManagementActor extends BaseActor {
   private CassandraOperation cassandraOperation = ServiceFactory.getInstance();
   private UserRequestValidator userRequestValidator = new UserRequestValidator();
+  private UserProfileService userProfileService = new UserProfileService();
+
   private static LocationClient locationClient = LocationClientImpl.getInstance();
   private static LocationService locationService = LocationServiceImpl.getInstance();
   private UserService userService = UserServiceImpl.getInstance();
@@ -249,10 +249,12 @@ public class UserManagementActor extends BaseActor {
     Map<String, Object> userMap = actorMessage.getRequest();
     logger.info(actorMessage.getRequestContext(), "Incoming update request body: " + userMap);
     userRequestValidator.validateUpdateUserRequest(actorMessage);
+    userProfileService.validateProfile(actorMessage);
     // update externalIds provider from channel to orgId
     UserUtil.updateExternalIdsProviderWithOrgId(userMap, actorMessage.getRequestContext());
     Map<String, Object> userDbRecord =
         UserUtil.validateExternalIdsAndReturnActiveUser(userMap, actorMessage.getRequestContext());
+
     String managedById = (String) userDbRecord.get(JsonKey.MANAGED_BY);
     if (actorMessage.getOperation().equalsIgnoreCase(ActorOperations.UPDATE_USER_V2.getValue())) {
       setProfileUsertypeAndLocation(userMap, actorMessage);

@@ -7,6 +7,7 @@ import org.apache.commons.lang.StringUtils;
 import org.sunbird.common.exception.ProjectCommonException;
 import org.sunbird.common.models.util.JsonKey;
 import org.sunbird.common.models.util.LoggerUtil;
+import org.sunbird.common.models.util.ProjectUtil;
 import org.sunbird.common.request.Request;
 import org.sunbird.user.profile.ProfileUtil;
 import org.sunbird.user.service.IUserProfileService;
@@ -23,8 +24,7 @@ import static org.sunbird.common.request.orgvalidator.BaseOrgRequestValidator.ER
 public class UserProfileService implements IUserProfileService {
 
     private LoggerUtil logger = new LoggerUtil(UserProfileReadService.class);
-
-    private static final String SCHEMA = "profileDetails.json";
+    private static final String SCHEMA = ProjectUtil.getConfigValue("schema");
     private static final ObjectMapper mapper = new ObjectMapper();
 
     static {

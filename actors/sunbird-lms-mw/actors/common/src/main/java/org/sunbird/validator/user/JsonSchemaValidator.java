@@ -38,7 +38,6 @@ public class JsonSchemaValidator {
     public static boolean validate(String entityType, String payload) throws Exception {
         boolean result = false;
         Schema schema = getEntitySchema(entityType);
-        logger.info("payload:: " +payload);
         JSONObject obj = new JSONObject(payload);
         try {
             schema.validate(obj);

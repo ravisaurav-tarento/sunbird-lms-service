@@ -4,7 +4,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.sunbird.common.request.Request;
 
+import java.util.Map;
+
 public interface IUserProfileService {
+
+    String WORKFLOW = "workflow";
+    String FIELDKEY = "fieldKey";
+    String TOVALUE = "toValue";
 
     /**
      * Validate json payload of user profile of a given user request
@@ -17,6 +23,6 @@ public interface IUserProfileService {
      * @param userRequest
      * @return
      */
-    public boolean updateWorkflow(Request userRequest);
+    public void updateWorkflow(Map<String, Object> userRequest, Map userRecord);
 
 }

@@ -49,48 +49,4 @@ public class UserProfileService implements IUserProfileService {
         }
     }
 
-    @Override
-    public void updateWorkflow(Map<String, Object> userRequest, Map userRecord){
-        Map<String, Object> existingUserProfile = (Map<String, Object>) userRecord.get(JsonKey.PROFILE_DETAILS);
-        logger.info("workflow existing profile details: "+existingUserProfile);
-        if(userRequest.get(WORKFLOW)!=null){
-            try{
-                List<Map<String, Object>> requests = (List<Map<String, Object>>)userRequest.get(WORKFLOW);
-
-
-                for (Map<String, Object> request : requests) {
-                    String osid = null;
-                    Map<String, Object> toChange = new HashMap<>();
-                    Object profileObject = existingUserProfile.get(request.get(FIELDKEY));
-                    Map<String, Object> searchFields = null;
-
-                    if (profileObject instanceof ArrayList) {
-                        osid = StringUtils.isEmpty(request.get(ProfileUtil.OSID).toString()) == true ? "" : request.get(ProfileUtil.OSID).toString();
-                        for (Map<String, Object> obj : ((List<Map<String, Object>>) profileObject)) {
-                            if (obj.get("osid").toString().equalsIgnoreCase(osid))
-                                searchFields = obj;
-                        }
-                    }
-                    if (profileObject instanceof HashMap) {
-                        searchFields = (Map<String, Object>) existingUserProfile.get((String) request.get(FIELDKEY));
-                    }
-                    toChange.putAll(searchFields);
-
-                    Map<String, Object> objectMap = (Map<String, Object>) request.get(TOVALUE);
-                    for (Map.Entry entry : objectMap.entrySet())
-                        toChange.put((String) entry.getKey(), entry.getValue());
-                    ProfileUtil.mergeLeaf(existingUserProfile, toChange, request.get(FIELDKEY).toString(),osid );
-                }
-                userRequest.put(JsonKey.PROFILE_DETAILS, existingUserProfile);
-
-            }catch (Exception e){
-                logger.error("Workflow Update exception:",e);
-
-            }
-        }
-    }
-
-
-
-
 }

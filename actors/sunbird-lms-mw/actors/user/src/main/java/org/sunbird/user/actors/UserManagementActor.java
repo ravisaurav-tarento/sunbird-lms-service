@@ -254,9 +254,6 @@ public class UserManagementActor extends BaseActor {
     UserUtil.updateExternalIdsProviderWithOrgId(userMap, actorMessage.getRequestContext());
     Map<String, Object> userDbRecord =
         UserUtil.validateExternalIdsAndReturnActiveUser(userMap, actorMessage.getRequestContext());
-    //Workflow activity added
-    userProfileService.updateWorkflow(userMap, userDbRecord);
-    logger.info("workflow changed usermap::"+userMap);
 
     String managedById = (String) userDbRecord.get(JsonKey.MANAGED_BY);
     if (actorMessage.getOperation().equalsIgnoreCase(ActorOperations.UPDATE_USER_V2.getValue())) {

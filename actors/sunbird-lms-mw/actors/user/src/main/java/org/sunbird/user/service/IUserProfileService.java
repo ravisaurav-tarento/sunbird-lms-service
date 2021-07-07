@@ -8,21 +8,11 @@ import java.util.Map;
 
 public interface IUserProfileService {
 
-    String WORKFLOW = "workflow";
-    String FIELDKEY = "fieldKey";
-    String TOVALUE = "toValue";
-
     /**
      * Validate json payload of user profile of a given user request
      * @param userRequest
      */
     public void validateProfile(Request userRequest);
 
-    /**
-     *
-     * @param userRequest
-     * @return
-     */
-    public void updateWorkflow(Map<String, Object> userRequest, Map userRecord);
 
 }

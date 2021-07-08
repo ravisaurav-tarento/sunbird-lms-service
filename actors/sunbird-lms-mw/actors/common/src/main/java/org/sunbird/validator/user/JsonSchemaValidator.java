@@ -31,7 +31,7 @@ public class JsonSchemaValidator {
             Map<String, String> configSettingMap = DataCacheHandler.getConfigSettings();
             String schemaConfig = configSettingMap.get(JsonKey.EXTENDED_PROFILE_SCHEMA_CONFIG);
             for (Map.Entry entry : ProfileUtil.toMap(schemaConfig).entrySet()) {
-                schemas.put(entry.getKey().toString(), new ObjectMapper().writeValueAsString(entry.getValue()));
+                schemas.put(entry.getKey().toString(), ProfileUtil.mapper.writeValueAsString(entry.getValue()));
             }
 
         } catch (Exception e) {

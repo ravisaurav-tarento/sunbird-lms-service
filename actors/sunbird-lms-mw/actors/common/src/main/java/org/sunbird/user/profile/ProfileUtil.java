@@ -8,12 +8,13 @@ import java.util.*;
 public class ProfileUtil {
 
     public static final String OSID = "osid";
+    public static final ObjectMapper mapper = new ObjectMapper();
 
     public static Map<String,Object> toMap(String jsonString) {
         try {
             TypeReference<HashMap<String, Object>> typeRef
                     = new TypeReference<HashMap<String, Object>>() {};
-            Map<String, Object> map = new ObjectMapper().readValue(jsonString, typeRef);
+            Map<String, Object> map = mapper.readValue(jsonString, typeRef);
             return map;
 
         } catch (Exception e) {

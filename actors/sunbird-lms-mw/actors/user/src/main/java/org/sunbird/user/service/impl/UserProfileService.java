@@ -26,7 +26,6 @@ public class UserProfileService implements IUserProfileService {
 
     private LoggerUtil logger = new LoggerUtil(UserProfileReadService.class);
     private static final String SCHEMA = "profileDetails.json";
-    private static final ObjectMapper mapper = new ObjectMapper();
 
 
     @Override
@@ -35,7 +34,7 @@ public class UserProfileService implements IUserProfileService {
         if (userRequest!=null && userRequest.get(JsonKey.PROFILE_DETAILS)!=null) {
             try{
                 JsonSchemaValidator.loadSchemas();
-                String userProfile = mapper.writeValueAsString(userRequest.getRequest().get(JsonKey.PROFILE_DETAILS));
+                String userProfile = ProfileUtil.mapper.writeValueAsString(userRequest.getRequest().get(JsonKey.PROFILE_DETAILS));
                 JsonSchemaValidator.validate(SCHEMA, userProfile);
 
             } catch (Exception e){

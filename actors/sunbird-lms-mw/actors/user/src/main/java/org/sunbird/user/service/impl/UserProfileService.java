@@ -9,6 +9,7 @@ import org.sunbird.common.models.util.JsonKey;
 import org.sunbird.common.models.util.LoggerUtil;
 import org.sunbird.common.models.util.ProjectUtil;
 import org.sunbird.common.request.Request;
+import org.sunbird.learner.util.DataCacheHandler;
 import org.sunbird.user.profile.ProfileUtil;
 import org.sunbird.user.service.IUserProfileService;
 import org.sunbird.user.service.UserProfileReadService;
@@ -24,18 +25,16 @@ import static org.sunbird.common.request.orgvalidator.BaseOrgRequestValidator.ER
 public class UserProfileService implements IUserProfileService {
 
     private LoggerUtil logger = new LoggerUtil(UserProfileReadService.class);
-    private static final String SCHEMA = ProjectUtil.getConfigValue("schema");
+    private static final String SCHEMA = "profileDetails.json";
     private static final ObjectMapper mapper = new ObjectMapper();
 
-    static {
-        JsonSchemaValidator.loadSchemas();
-    }
 
     @Override
     public void validateProfile(Request userRequest) {
 
         if (userRequest!=null && userRequest.get(JsonKey.PROFILE_DETAILS)!=null) {
             try{
+                JsonSchemaValidator.loadSchemas();
                 String userProfile = mapper.writeValueAsString(userRequest.getRequest().get(JsonKey.PROFILE_DETAILS));
                 JsonSchemaValidator.validate(SCHEMA, userProfile);
 

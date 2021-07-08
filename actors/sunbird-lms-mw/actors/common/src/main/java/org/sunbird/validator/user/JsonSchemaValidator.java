@@ -1,11 +1,16 @@
 package org.sunbird.validator.user;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.everit.json.schema.Schema;
 import org.everit.json.schema.ValidationException;
 import org.everit.json.schema.loader.SchemaLoader;
 import org.json.JSONObject;
+import org.sunbird.common.exception.ProjectCommonException;
+import org.sunbird.common.models.util.JsonKey;
 import org.sunbird.common.models.util.LoggerUtil;
 import org.sunbird.common.models.util.ProjectUtil;
+import org.sunbird.learner.util.DataCacheHandler;
+import org.sunbird.user.profile.ProfileUtil;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -13,27 +18,30 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
+import static org.sunbird.common.request.orgvalidator.BaseOrgRequestValidator.ERROR_CODE;
+
 public class JsonSchemaValidator {
 
     private static LoggerUtil logger = new LoggerUtil(UserRequestValidator.class);
-
     private static Map<String, String> schemas = new HashMap<>();
-    private static final String SCHEMA_PATH = ProjectUtil.getConfigValue("schema_path");
 
-    public static void loadSchemas(){
-        File[] files = new File(SCHEMA_PATH).listFiles();
+    public static void loadSchemas() {
 
-        for (File file : files) {
-            logger.info(null, String.format("file :- "+file.getName()));
-
-            if (file.isFile()) {
-                schemas.put(file.getName(), read(SCHEMA_PATH + file.getName()));
-
+        try {
+            Map<String, String> configSettingMap = DataCacheHandler.getConfigSettings();
+            String schemaConfig = configSettingMap.get(JsonKey.EXTENDED_PROFILE_SCHEMA_CONFIG);
+            for (Map.Entry entry : ProfileUtil.toMap(schemaConfig).entrySet()) {
+                schemas.put(entry.getKey().toString(), new ObjectMapper().writeValueAsString(entry.getValue()));
             }
-        }
-        logger.info(null, String.format("schemas size :- "+schemas.size()));
-    }
 
+        } catch (Exception e) {
+            throw new ProjectCommonException(
+                    "SCHEMA_CANNOT_LOADED",
+                    e.getMessage(),
+                    ERROR_CODE);
+        }
+        logger.info(null, String.format("schemas size :- " + schemas.size()));
+    }
 
     public static boolean validate(String entityType, String payload) throws Exception {
         boolean result = false;
@@ -56,14 +64,12 @@ public class JsonSchemaValidator {
             String definitionContent = schemas.get(entityType);
             JSONObject rawSchema = new JSONObject(definitionContent);
 
-            SchemaLoader schemaLoader = SchemaLoader.builder()
-                    .schemaJson(rawSchema)
-                    .draftV7Support()
-                    .resolutionScope("file://"+SCHEMA_PATH).build();
+            SchemaLoader schemaLoader = SchemaLoader.builder().useDefaults(true)
+                    .schemaJson(rawSchema).build();
             schema = schemaLoader.load().build();
         } catch (Exception ioe) {
             ioe.printStackTrace();
-            throw new Exception("can't validate, "+ entityType + ": schema has a problem!");
+            throw new Exception("can't validate, " + entityType + ": schema has a problem!");
         }
         return schema;
     }

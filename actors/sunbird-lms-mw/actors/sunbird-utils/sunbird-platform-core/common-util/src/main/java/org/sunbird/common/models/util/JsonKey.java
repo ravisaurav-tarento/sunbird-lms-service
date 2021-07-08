@@ -637,6 +637,7 @@ public final class JsonKey {
   public static final String UNBLOCK_USER = "UnblockUser";
   public static final String ROLE_OPERATION = "roleOperation";
   public static final String SCOPE_STR = "scopeString";
+  public static final String EXTENDED_PROFILE_SCHEMA_CONFIG = "extendedProfileSchemaConfig";
 
   private JsonKey() {}
 }

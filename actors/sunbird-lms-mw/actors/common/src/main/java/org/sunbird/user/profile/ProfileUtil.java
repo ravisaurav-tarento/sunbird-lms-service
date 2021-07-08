@@ -9,7 +9,7 @@ public class ProfileUtil {
 
     public static final String OSID = "osid";
 
-    public static Map toMap(String jsonString) {
+    public static Map<String,Object> toMap(String jsonString) {
         try {
             TypeReference<HashMap<String, Object>> typeRef
                     = new TypeReference<HashMap<String, Object>>() {};

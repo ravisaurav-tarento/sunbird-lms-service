@@ -8,7 +8,10 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.collections.MapUtils;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.sunbird.common.models.util.LoggerUtil;
 import org.sunbird.user.profile.ProfileUtil;
 
 /**
@@ -20,6 +23,8 @@ import org.sunbird.user.profile.ProfileUtil;
 public class User implements Serializable {
 
   private static final long serialVersionUID = 7529802960267784945L;
+  private LoggerUtil logger = new LoggerUtil(User.class);
+
 
   private String id;
   private String countryCode;
@@ -70,12 +75,12 @@ public class User implements Serializable {
   }
 
   public void setProfiledetails(Map profiledetails) {
-    if(profiledetails!=null){
+    if(MapUtils.isNotEmpty(profiledetails)){
       try{
         ProfileUtil.appendIdToRefenceObjects(profiledetails);
         this.profiledetails = new ObjectMapper().writeValueAsString(profiledetails);
       }catch (Exception e){
-        e.printStackTrace();
+        logger.error( "User Exception " , e);
       }
     }
 

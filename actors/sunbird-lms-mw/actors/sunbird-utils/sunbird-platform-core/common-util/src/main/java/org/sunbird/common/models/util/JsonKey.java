@@ -638,6 +638,7 @@ public final class JsonKey {
   public static final String ROLE_OPERATION = "roleOperation";
   public static final String SCOPE_STR = "scopeString";
   public static final String EXTENDED_PROFILE_SCHEMA_CONFIG = "extendedProfileSchemaConfig";
+  public static final String OSID = "osid";
 
   private JsonKey() {}
 }

@@ -8,7 +8,6 @@ import org.json.JSONObject;
 import org.sunbird.common.exception.ProjectCommonException;
 import org.sunbird.common.models.util.JsonKey;
 import org.sunbird.common.models.util.LoggerUtil;
-import org.sunbird.common.models.util.ProjectUtil;
 import org.sunbird.learner.util.DataCacheHandler;
 import org.sunbird.user.profile.ProfileUtil;
 
@@ -26,12 +25,11 @@ public class JsonSchemaValidator {
     private static Map<String, String> schemas = new HashMap<>();
 
     public static void loadSchemas() {
-
+        ObjectMapper mapper = new ObjectMapper();
         try {
-            Map<String, String> configSettingMap = DataCacheHandler.getConfigSettings();
-            String schemaConfig = configSettingMap.get(JsonKey.EXTENDED_PROFILE_SCHEMA_CONFIG);
+            String schemaConfig = DataCacheHandler.getConfigSettings().get(JsonKey.EXTENDED_PROFILE_SCHEMA_CONFIG);
             for (Map.Entry entry : ProfileUtil.toMap(schemaConfig).entrySet()) {
-                schemas.put(entry.getKey().toString(), ProfileUtil.mapper.writeValueAsString(entry.getValue()));
+                schemas.put(entry.getKey().toString(), mapper.writeValueAsString(entry.getValue()));
             }
 
         } catch (Exception e) {
@@ -51,7 +49,6 @@ public class JsonSchemaValidator {
             schema.validate(obj);
             result = true;
         } catch (ValidationException e) {
-            e.printStackTrace();
             throw new Exception(e.getMessage());
         }
         return result;

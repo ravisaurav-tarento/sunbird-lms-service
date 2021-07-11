@@ -27,6 +27,7 @@ public class Organisation implements Serializable {
   private String externalId;
   private String orgName;
   private Integer organisationType;
+  private Integer organisationSubType;
   private String provider;
   private String rootOrgId;
   private String slug;
@@ -36,6 +37,8 @@ public class Organisation implements Serializable {
   private Boolean isSSOEnabled;
   private Boolean isTenant;
   private List<Map<String, String>> orgLocation;
+  private String imgUrl;
+  private String homeUrl;
 
   public String getId() {
     return id;
@@ -189,5 +192,29 @@ public class Organisation implements Serializable {
 
   public void setOrgLocation(List<Map<String, String>> orgLocation) {
     this.orgLocation = orgLocation;
+  }
+
+  public Integer getOrganisationSubType() {
+    return organisationSubType;
+  }
+
+  public void setOrganisationSubType(Integer organisationSubType) {
+    this.organisationSubType = organisationSubType;
+  }
+
+  public String getImgUrl() {
+    return imgUrl;
+  }
+
+  public void setImgUrl(String imgUrl) {
+    this.imgUrl = imgUrl;
+  }
+
+  public String getHomeUrl() {
+    return homeUrl;
+  }
+
+  public void setHomeUrl(String homeUrl) {
+    this.homeUrl = homeUrl;
   }
 }

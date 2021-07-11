@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import net.logstash.logback.encoder.org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -38,7 +40,7 @@ import org.sunbird.learner.util.DataCacheHandler;
 import org.sunbird.learner.util.UserFlagUtil;
 import org.sunbird.learner.util.UserUtility;
 import org.sunbird.learner.util.Util;
-import org.sunbird.models.organisation.OrgTypeEnum;
+import org.sunbird.models.organisation.OrgTypeValidator;
 import org.sunbird.user.dao.UserDao;
 import org.sunbird.user.dao.UserOrgDao;
 import org.sunbird.user.dao.UserRoleDao;
@@ -85,7 +87,9 @@ public class UserProfileReadService {
     appendUserTypeAndLocation(result, actorMessage);
     result.putAll(Util.getUserDefaultValue());
     //Added the profiledetails translation
-    result.put(JsonKey.PROFILE_DETAILS, ProfileUtil.toMap(result.get(JsonKey.PROFILE_DETAILS).toString()));
+    if(ObjectUtils.isNotEmpty(result.get(JsonKey.PROFILE_DETAILS))) {
+      result.put(JsonKey.PROFILE_DETAILS, ProfileUtil.toMap(result.get(JsonKey.PROFILE_DETAILS).toString()));
+    }
     Map<String, Object> rootOrg =
         orgDao.getOrgById(
             (String) result.get(JsonKey.ROOT_ORG_ID), actorMessage.getRequestContext());
@@ -96,6 +100,7 @@ public class UserProfileReadService {
           .equalsIgnoreCase(ActorOperations.GET_USER_PROFILE_V4.getValue())) {
         Util.getOrgDefaultValue().keySet().stream().forEach(key -> rootOrg.remove(key));
       }
+      OrgTypeValidator.getInstance().updateOrganisationTypeFlags(rootOrg);
     }
     result.put(JsonKey.ROOT_ORG, rootOrg);
     result.put(
@@ -156,6 +161,8 @@ public class UserProfileReadService {
         .equalsIgnoreCase(ActorOperations.GET_USER_PROFILE_V4.getValue())) {
       Util.getUserDefaultValue().keySet().stream().forEach(key -> result.remove(key));
     }
+
+    mapUserRoles(result);
 
     Response response = new Response();
     response.put(JsonKey.RESPONSE, result);
@@ -765,7 +772,7 @@ public class UserProfileReadService {
         if (null != orgInfo.get(JsonKey.ORGANISATION_TYPE)) {
           int orgType = (int) orgInfo.get(JsonKey.ORGANISATION_TYPE);
           boolean isSchool =
-              (orgType == OrgTypeEnum.getValueByType(OrgTypeEnum.SCHOOL.getType())) ? true : false;
+              (orgType == OrgTypeValidator.getInstance().getValueByType(JsonKey.ORG_TYPE_SCHOOL)) ? true : false;
           usrOrg.put(JsonKey.IS_SCHOOL, isSchool);
         }
         if (MapUtils.isNotEmpty(locationInfoMap)) {
@@ -787,5 +794,19 @@ public class UserProfileReadService {
       }
     }
     return retList;
+  }
+
+  private void mapUserRoles(Map<String, Object> result) {
+    List<Map<String, Object>> organisations = (List<Map<String, Object>>) result.get(JsonKey.ORGANISATIONS);
+    List<String> roleList = new ArrayList<String>();
+    for(Map<String, Object> org : organisations) {
+      boolean isDeleted = (boolean) org.get(JsonKey.IS_DELETED);
+      if(!isDeleted) {
+        roleList.addAll((List<String>)org.get(JsonKey.ROLES));
+      }
+    }
+    if(CollectionUtils.isNotEmpty(roleList)) {
+      result.put(JsonKey.ROLES, roleList);
+    }
   }
 }

@@ -77,7 +77,7 @@ public class User implements Serializable {
   public void setProfiledetails(Map profiledetails) {
     if(MapUtils.isNotEmpty(profiledetails)){
       try{
-        ProfileUtil.appendIdToRefenceObjects(profiledetails);
+        ProfileUtil.appendIdToReferenceObjects(profiledetails);
         this.profiledetails = new ObjectMapper().writeValueAsString(profiledetails);
       }catch (Exception e){
         logger.error( "User Exception " , e);

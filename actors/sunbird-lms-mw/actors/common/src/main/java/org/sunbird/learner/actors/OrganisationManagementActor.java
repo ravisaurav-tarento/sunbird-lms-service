@@ -39,7 +39,7 @@ import org.sunbird.learner.organisation.service.OrgService;
 import org.sunbird.learner.organisation.service.impl.OrgServiceImpl;
 import org.sunbird.learner.util.Util;
 import org.sunbird.models.location.Location;
-import org.sunbird.models.organisation.OrgTypeEnum;
+import org.sunbird.models.organisation.OrgTypeValidator;
 import org.sunbird.models.organisation.Organisation;
 import org.sunbird.telemetry.util.TelemetryUtil;
 import org.sunbird.validator.location.LocationRequestValidator;
@@ -99,8 +99,12 @@ public class OrganisationManagementActor extends BaseActor {
         ProjectCommonException.throwClientErrorException(ResponseCode.emailFormatError);
       }
       String orgType = (String) request.get(JsonKey.ORG_TYPE);
-      validateOrgType(orgType, JsonKey.CREATE);
-      request.put(JsonKey.ORG_TYPE, OrgTypeEnum.getValueByType(orgType));
+      String orgSubType = (String) request.get(JsonKey.ORG_SUB_TYPE);
+      validateOrgType(orgType, orgSubType, JsonKey.CREATE);
+      request.put(JsonKey.ORG_TYPE, OrgTypeValidator.getInstance().getValueByType(orgType));
+      if(StringUtils.isNotBlank(orgSubType)) {
+        request.put(JsonKey.ORG_SUB_TYPE, OrgTypeValidator.getInstance().getValueByType(orgSubType));
+      }
       // Channel is mandatory for all org
       channelMandatoryValidation(request);
       String channel = (String) request.get(JsonKey.CHANNEL);
@@ -249,7 +253,7 @@ public class OrganisationManagementActor extends BaseActor {
     }
   }
 
-  private void validateOrgType(String orgType, String operation) {
+  private void validateOrgType(String orgType, String orgSubType, String operation) {
     if (StringUtils.isBlank(orgType) && operation.equalsIgnoreCase(JsonKey.CREATE)) {
       throw new ProjectCommonException(
           ResponseCode.mandatoryParamsMissing.getErrorCode(),
@@ -258,17 +262,20 @@ public class OrganisationManagementActor extends BaseActor {
           ResponseCode.CLIENT_ERROR.getResponseCode());
     }
 
-    List<String> orgTypeList = new ArrayList<>();
-    for (OrgTypeEnum type : OrgTypeEnum.values()) {
-      orgTypeList.add(type.getType());
-    }
-
-    if (StringUtils.isNotBlank(orgType) && !orgTypeList.contains(orgType)) {
+    if (StringUtils.isNotBlank(orgType) && !OrgTypeValidator.getInstance().isOrgTypeExist(orgType)) {
       throw new ProjectCommonException(
           ResponseCode.invalidValue.getErrorCode(),
           MessageFormat.format(
-              ResponseCode.invalidValue.getErrorMessage(), JsonKey.ORG_TYPE, orgType, orgTypeList),
+              ResponseCode.invalidValue.getErrorMessage(), JsonKey.ORG_TYPE, orgType, OrgTypeValidator.getInstance().getOrgTypeNames()),
           ResponseCode.CLIENT_ERROR.getResponseCode());
+    }
+
+    if (StringUtils.isNotBlank(orgSubType) && !OrgTypeValidator.getInstance().isOrgTypeExist(orgSubType)) {
+      throw new ProjectCommonException(
+              ResponseCode.invalidValue.getErrorCode(),
+              MessageFormat.format(
+                      ResponseCode.invalidValue.getErrorMessage(), JsonKey.ORG_TYPE, orgType, OrgTypeValidator.getInstance().getOrgTypeNames()),
+              ResponseCode.CLIENT_ERROR.getResponseCode());
     }
   }
 
@@ -366,9 +373,13 @@ public class OrganisationManagementActor extends BaseActor {
         ProjectCommonException.throwClientErrorException(ResponseCode.emailFormatError);
       }
       String orgType = (String) request.get(JsonKey.ORG_TYPE);
-      validateOrgType(orgType, JsonKey.UPDATE);
+      String orgSubType = (String) request.get(JsonKey.ORG_SUB_TYPE);
+      validateOrgType(orgType, orgSubType, JsonKey.UPDATE);
       if (StringUtils.isNotBlank(orgType)) {
-        request.put(JsonKey.ORG_TYPE, OrgTypeEnum.getValueByType(orgType));
+        request.put(JsonKey.ORG_TYPE, OrgTypeValidator.getInstance().getValueByType(orgType));
+      }
+      if(StringUtils.isNotBlank(orgSubType)) {
+        request.put(JsonKey.ORG_SUB_TYPE, OrgTypeValidator.getInstance().getValueByType(orgSubType));
       }
       String orgId = (String) request.get(JsonKey.ORGANISATION_ID);
       OrgService orgService = OrgServiceImpl.getInstance();
@@ -582,7 +593,7 @@ public class OrganisationManagementActor extends BaseActor {
       if (null != result.get(JsonKey.ORGANISATION_TYPE)) {
         int orgType = (int) result.get(JsonKey.ORGANISATION_TYPE);
         boolean isSchool =
-            (orgType == OrgTypeEnum.getValueByType(OrgTypeEnum.SCHOOL.getType())) ? true : false;
+            (orgType == OrgTypeValidator.getInstance().getValueByType(JsonKey.ORG_TYPE_SCHOOL)) ? true : false;
         result.put(JsonKey.IS_SCHOOL, isSchool);
       }
     }

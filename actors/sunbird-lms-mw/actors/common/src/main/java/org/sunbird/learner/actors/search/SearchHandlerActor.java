@@ -26,7 +26,7 @@ import org.sunbird.common.responsecode.ResponseMessage;
 import org.sunbird.dto.SearchDTO;
 import org.sunbird.learner.util.UserUtility;
 import org.sunbird.learner.util.Util;
-import org.sunbird.models.organisation.OrgTypeEnum;
+import org.sunbird.models.organisation.OrgTypeValidator;
 import org.sunbird.models.organisation.Organisation;
 import org.sunbird.telemetry.util.TelemetryWriter;
 import scala.concurrent.Future;
@@ -302,7 +302,7 @@ public class SearchHandlerActor extends BaseActor {
                             int orgType = (int) org.get(JsonKey.ORGANISATION_TYPE);
                             boolean isSchool =
                                 (orgType
-                                        == OrgTypeEnum.getValueByType(OrgTypeEnum.SCHOOL.getType()))
+                                        == OrgTypeValidator.getInstance().getValueByType(JsonKey.ORG_TYPE_SCHOOL))
                                     ? true
                                     : false;
                             org.put(JsonKey.IS_SCHOOL, isSchool);

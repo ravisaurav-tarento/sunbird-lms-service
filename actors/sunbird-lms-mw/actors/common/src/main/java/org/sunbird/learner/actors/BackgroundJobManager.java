@@ -18,6 +18,7 @@ import org.sunbird.common.request.Request;
 import org.sunbird.common.request.RequestContext;
 import org.sunbird.helper.ServiceFactory;
 import org.sunbird.learner.util.Util;
+import org.sunbird.models.organisation.OrgTypeValidator;
 import scala.concurrent.Future;
 
 /**
@@ -150,6 +151,7 @@ public class BackgroundJobManager extends BaseActor {
           }
         }
         esMap.put(JsonKey.ORG_LOCATION, orgLocationList);
+        OrgTypeValidator.getInstance().updateOrganisationTypeFlags(esMap);
       }
       // making call to register tag
       registertag(id, "{}", headerMap, actorMessage.getRequestContext());
@@ -166,6 +168,7 @@ public class BackgroundJobManager extends BaseActor {
   private void updateOrgInfoToEs(Request actorMessage) {
     Map<String, Object> orgMap =
         (Map<String, Object>) actorMessage.getRequest().get(JsonKey.ORGANISATION);
+    OrgTypeValidator.getInstance().updateOrganisationTypeFlags(orgMap);
     updateDataToElastic(
         ProjectUtil.EsIndex.sunbird.getIndexName(),
         ProjectUtil.EsType.organisation.getTypeName(),

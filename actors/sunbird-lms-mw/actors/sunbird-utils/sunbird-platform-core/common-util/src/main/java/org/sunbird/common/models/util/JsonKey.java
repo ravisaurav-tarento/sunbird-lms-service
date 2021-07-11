@@ -639,6 +639,12 @@ public final class JsonKey {
   public static final String SCOPE_STR = "scopeString";
   public static final String EXTENDED_PROFILE_SCHEMA_CONFIG = "extendedProfileSchemaConfig";
   public static final String OSID = "osid";
+  public static final String ORG_SUB_TYPE = "organisationSubType";
+  public static final String ORG_TYPE_CONFIG = "orgTypeConfig";
+  public static final String ORG_TYPE_SCHOOL = "school";
+  public static final String ORG_TYPE_BOARD = "board";
+  public static final String FORCE_MIGRATION = "forceMigration";
+  public static final String SOFT_DELETE_PREVIOUS_ORG = "softDeleteOldOrg";
 
   private JsonKey() {}
 }

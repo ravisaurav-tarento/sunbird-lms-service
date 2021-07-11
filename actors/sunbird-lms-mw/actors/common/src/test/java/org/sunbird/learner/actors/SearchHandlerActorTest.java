@@ -1,8 +1,7 @@
 package org.sunbird.learner.actors;
 
 import static akka.testkit.JavaTestKit.duration;
-import static org.powermock.api.mockito.PowerMockito.mock;
-import static org.powermock.api.mockito.PowerMockito.when;
+import static org.powermock.api.mockito.PowerMockito.*;
 
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
@@ -34,6 +33,8 @@ import org.sunbird.common.models.util.JsonKey;
 import org.sunbird.common.request.Request;
 import org.sunbird.helper.ServiceFactory;
 import org.sunbird.learner.actors.search.SearchHandlerActor;
+import org.sunbird.models.organisation.OrgTypeValidator;
+import org.sunbird.models.organisation.OrganisationType;
 import scala.concurrent.Promise;
 
 @RunWith(PowerMockRunner.class)
@@ -42,7 +43,8 @@ import scala.concurrent.Promise;
   ElasticSearchRestHighImpl.class,
   EsClientFactory.class,
   SunbirdMWService.class,
-  BaseMWService.class
+  BaseMWService.class,
+  OrgTypeValidator.class
 })
 @PowerMockIgnore({
   "javax.management.*",
@@ -104,6 +106,10 @@ public class SearchHandlerActorTest {
     PowerMockito.mockStatic(EsClientFactory.class);
     ElasticSearchService esService = mock(ElasticSearchRestHighImpl.class);
     when(EsClientFactory.getInstance(Mockito.anyString())).thenReturn(esService);
+    OrgTypeValidator orgTypeValidator = mock(OrgTypeValidator.class);
+    mockStatic(OrgTypeValidator.class);
+    when(OrgTypeValidator.getInstance()).thenReturn(orgTypeValidator);
+    when(orgTypeValidator.getValueByType(JsonKey.ORG_TYPE_SCHOOL)).thenReturn(2);
     Promise<Map<String, Object>> promise = Futures.promise();
     promise.success(createResponseGet(true));
     when(esService.search(Mockito.any(), Mockito.anyString(), Mockito.any()))

@@ -26,7 +26,7 @@ import org.sunbird.learner.actors.bulkupload.model.BulkUploadProcess;
 import org.sunbird.learner.actors.bulkupload.model.BulkUploadProcessTask;
 import org.sunbird.learner.util.Util;
 import org.sunbird.models.location.Location;
-import org.sunbird.models.organisation.OrgTypeEnum;
+import org.sunbird.models.organisation.OrgTypeValidator;
 import org.sunbird.models.organisation.Organisation;
 
 @ActorConfig(
@@ -113,7 +113,7 @@ public class OrgBulkUploadBackgroundJobActor extends BaseBulkUploadBackgroundJob
 
       String organisationType = (String) orgMap.get(JsonKey.ORG_TYPE);
       if (StringUtils.isNotBlank(organisationType)) {
-        orgMap.put(JsonKey.ORG_TYPE, OrgTypeEnum.getValueByType(organisationType));
+        orgMap.put(JsonKey.ORG_TYPE, OrgTypeValidator.getInstance().getValueByType(organisationType));
       }
       Organisation organisation = mapper.convertValue(orgMap, Organisation.class);
       organisation.setStatus(status);
@@ -192,7 +192,7 @@ public class OrgBulkUploadBackgroundJobActor extends BaseBulkUploadBackgroundJob
     Map<String, Object> row = mapper.convertValue(org, Map.class);
     row.put(JsonKey.LOCATION_CODE, locationCodes);
     String orgId;
-    row.put(JsonKey.ORG_TYPE, OrgTypeEnum.getTypeByValue(org.getOrganisationType()));
+    row.put(JsonKey.ORG_TYPE, OrgTypeValidator.getInstance().getTypeByValue(org.getOrganisationType()));
     try {
       orgId = orgClient.createOrg(getActorRef(ActorOperations.CREATE_ORG.getValue()), row, context);
     } catch (Exception ex) {
@@ -229,7 +229,7 @@ public class OrgBulkUploadBackgroundJobActor extends BaseBulkUploadBackgroundJob
     ObjectMapper mapper = new ObjectMapper();
     Map<String, Object> row = mapper.convertValue(org, Map.class);
     row.put(JsonKey.LOCATION_CODE, locationCodes);
-    row.put(JsonKey.ORG_TYPE, OrgTypeEnum.getTypeByValue(org.getOrganisationType()));
+    row.put(JsonKey.ORG_TYPE, OrgTypeValidator.getInstance().getTypeByValue(org.getOrganisationType()));
     try {
       row.put(JsonKey.ORGANISATION_ID, org.getId());
       orgClient.updateOrg(getActorRef(ActorOperations.UPDATE_ORG.getValue()), row, context);

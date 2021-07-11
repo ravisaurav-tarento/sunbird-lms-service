@@ -1,8 +1,7 @@
 package org.sunbird.user.service;
 
 import static org.mockito.ArgumentMatchers.nullable;
-import static org.powermock.api.mockito.PowerMockito.mock;
-import static org.powermock.api.mockito.PowerMockito.when;
+import static org.powermock.api.mockito.PowerMockito.*;
 
 import akka.dispatch.Futures;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -36,6 +35,7 @@ import org.sunbird.helper.ServiceFactory;
 import org.sunbird.learner.util.DataCacheHandler;
 import org.sunbird.learner.util.UserUtility;
 import org.sunbird.learner.util.Util;
+import org.sunbird.models.organisation.OrgTypeValidator;
 import org.sunbird.models.user.User;
 import org.sunbird.user.dao.UserDao;
 import org.sunbird.user.dao.UserOrgDao;
@@ -62,7 +62,8 @@ import scala.concurrent.Promise;
   EsClientFactory.class,
   ElasticSearchHelper.class,
   UserRoleDao.class,
-  UserRoleDaoImpl.class
+  UserRoleDaoImpl.class,
+  OrgTypeValidator.class
 })
 @PowerMockIgnore({
   "javax.management.*",
@@ -89,6 +90,10 @@ public class UserProfileReadServiceTest {
     config.put("groups", groupsConfig);
     config.put("orgAdminTnc", orgAdminTnc);
     when(DataCacheHandler.getConfigSettings()).thenReturn(config);
+    OrgTypeValidator orgTypeValidator = mock(OrgTypeValidator.class);
+    mockStatic(OrgTypeValidator.class);
+    when(OrgTypeValidator.getInstance()).thenReturn(orgTypeValidator);
+    when(orgTypeValidator.getValueByType(JsonKey.ORG_TYPE_SCHOOL)).thenReturn(2);
   }
 
   @Test

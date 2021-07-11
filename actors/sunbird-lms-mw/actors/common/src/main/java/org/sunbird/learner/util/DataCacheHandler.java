@@ -5,6 +5,11 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -16,6 +21,8 @@ import org.sunbird.common.models.util.ProjectUtil;
 import org.sunbird.common.request.RequestContext;
 import org.sunbird.helper.ServiceFactory;
 import org.sunbird.learner.actors.role.service.RoleService;
+import org.sunbird.models.organisation.OrgTypeValidator;
+import org.sunbird.models.organisation.OrganisationType;
 
 /**
  * This class will handle the data cache.
@@ -83,6 +90,7 @@ public class DataCacheHandler implements Runnable {
     cacheTelemetryPdata();
     cacheFormApiDataConfig();
     initLocationOrderMap();
+    initOrgTypeMap();
     logger.info("DataCacheHandler:run: Cache refresh completed.");
   }
 
@@ -302,5 +310,26 @@ public class DataCacheHandler implements Runnable {
 
   public static Map<String, Map<String, Object>> getFormApiDataConfigMap() {
     return formApiDataConfigMap;
+  }
+
+  private void initOrgTypeMap() {
+    String orgTypeConfig = getConfigSettings().get(JsonKey.ORG_TYPE_CONFIG);
+    logger.info("Using DataCacheHandler value. " + orgTypeConfig);
+    Map<String, Object> orgTypeConfigMap;
+    try {
+      orgTypeConfigMap = (new ObjectMapper()).readValue(orgTypeConfig,
+              new TypeReference<HashMap<String, Object>>() {
+              });
+      if (orgTypeConfigMap.containsKey(JsonKey.FIELDS)) {
+        List<OrganisationType> orgTypeList = (new ObjectMapper()).convertValue(orgTypeConfigMap.get(JsonKey.FIELDS),
+                new TypeReference<List<OrganisationType>>() {
+                });
+        OrgTypeValidator.getInstance().initializeOrgTypeFromCache(orgTypeList);
+      }
+    } catch (JsonMappingException e) {
+      logger.error("Failed to Map orgTypeConfig to OrganisationType member", e);
+    } catch (JsonProcessingException e) {
+      logger.error("Failed to process orgTypeConfig to OrganisationType member", e);
+    }
   }
 }

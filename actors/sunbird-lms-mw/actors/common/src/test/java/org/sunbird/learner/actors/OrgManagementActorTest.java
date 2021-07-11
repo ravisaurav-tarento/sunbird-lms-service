@@ -2,9 +2,7 @@ package org.sunbird.learner.actors;
 
 import static akka.testkit.JavaTestKit.duration;
 import static org.junit.Assert.assertTrue;
-import static org.powermock.api.mockito.PowerMockito.mock;
-import static org.powermock.api.mockito.PowerMockito.when;
-import static org.powermock.api.mockito.PowerMockito.whenNew;
+import static org.powermock.api.mockito.PowerMockito.*;
 
 import akka.actor.ActorRef;
 import akka.actor.ActorSelection;
@@ -46,6 +44,7 @@ import org.sunbird.learner.organisation.external.identity.service.OrgExternalSer
 import org.sunbird.learner.organisation.service.impl.OrgServiceImpl;
 import org.sunbird.learner.util.Util;
 import org.sunbird.models.location.Location;
+import org.sunbird.models.organisation.OrgTypeValidator;
 import org.sunbird.validator.location.LocationRequestValidator;
 import scala.concurrent.Promise;
 
@@ -64,7 +63,8 @@ import scala.concurrent.Promise;
   SunbirdMWService.class,
   ActorSelection.class,
   OrgExternalService.class,
-  OrgServiceImpl.class
+  OrgServiceImpl.class,
+  OrgTypeValidator.class
 })
 @PowerMockIgnore({
   "javax.management.*",
@@ -134,6 +134,11 @@ public class OrgManagementActorTest {
     when(ProjectUtil.getConfigValue(JsonKey.SUNBIRD_API_REQUEST_LOWER_CASE_FIELDS))
         .thenReturn("lowercase");
     when(ProjectUtil.getConfigValue("org_index_alias")).thenReturn("org_alias");
+    OrgTypeValidator orgTypeValidator = mock(OrgTypeValidator.class);
+    mockStatic(OrgTypeValidator.class);
+    when(OrgTypeValidator.getInstance()).thenReturn(orgTypeValidator);
+    when(orgTypeValidator.getValueByType(JsonKey.ORG_TYPE_SCHOOL)).thenReturn(2);
+    when(orgTypeValidator.isOrgTypeExist("board")).thenReturn(true);
   }
 
   @Test

@@ -165,8 +165,11 @@ public class TenantMigrationActor extends BaseActor {
         UserServiceImpl.getInstance()
             .esGetPublicUserProfileById(
                 (String) request.getRequest().get(JsonKey.USER_ID), request.getRequestContext());
-    validateUserCustodianOrgId(
-        (String) userDetails.get(JsonKey.ROOT_ORG_ID), request.getRequestContext());
+    if (null == request.getRequest().get(JsonKey.FORCE_MIGRATION)
+            || !(boolean) request.getRequest().get(JsonKey.FORCE_MIGRATION)) {
+      validateUserCustodianOrgId(
+              (String) userDetails.get(JsonKey.ROOT_ORG_ID), request.getRequestContext());
+    }
     validateChannelAndGetRootOrgId(request);
     Map<String, String> rollup = new HashMap<>();
     rollup.put("l1", (String) request.getRequest().get(JsonKey.ROOT_ORG_ID));
@@ -450,7 +453,12 @@ public class TenantMigrationActor extends BaseActor {
   private Response updateUserOrg(Request request, List<Map<String, Object>> userOrgList) {
     logger.info(request.getRequestContext(), "TenantMigrationActor:updateUserOrg called.");
     Response response = new Response();
-    deleteOldUserOrgMapping(userOrgList, request.getRequestContext());
+    Boolean isSoftDelete = (Boolean) request.get(JsonKey.SOFT_DELETE_PREVIOUS_ORG);
+    if (null != isSoftDelete && isSoftDelete) {
+      softDeleteOldUserOrgMapping(userOrgList, request.getRequestContext());
+    } else {
+      deleteOldUserOrgMapping(userOrgList, request.getRequestContext());
+    }
     Map<String, Object> userDetails = request.getRequest();
     // add mapping root org
     createUserOrgRequestAndUpdate(
@@ -813,5 +821,27 @@ public class TenantMigrationActor extends BaseActor {
 
   private SSOManager getSSOManager() {
     return SSOServiceFactory.getInstance();
+  }
+
+  private void softDeleteOldUserOrgMapping(
+          List<Map<String, Object>> userOrgList, RequestContext context) {
+    logger.info(
+            context,
+            "TenantMigrationActor:softDeleteOldUserOrgMapping: soft delete old user org association started.");
+    CassandraOperation cassandraOperation = ServiceFactory.getInstance();
+    for (Map<String, Object> userOrg : userOrgList) {
+      Map<String, Object> compositeKey = new LinkedHashMap<>(2);
+      compositeKey.put(JsonKey.USER_ID, (String) userOrg.get(JsonKey.USER_ID));
+      compositeKey.put(JsonKey.ORGANISATION_ID, (String) userOrg.get(JsonKey.ORGANISATION_ID));
+
+      Map<String, Object> userOrgUpdateRequest = new LinkedHashMap<>(1);
+      userOrgUpdateRequest.put(JsonKey.IS_DELETED, true);
+      cassandraOperation.updateRecord(
+              usrOrgDbInfo.getKeySpace(),
+              usrOrgDbInfo.getTableName(),
+              userOrgUpdateRequest,
+              compositeKey,
+              context);
+    }
   }
 }

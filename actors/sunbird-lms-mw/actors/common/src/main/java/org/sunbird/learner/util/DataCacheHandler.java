@@ -326,10 +326,8 @@ public class DataCacheHandler implements Runnable {
                 });
         OrgTypeValidator.getInstance().initializeOrgTypeFromCache(orgTypeList);
       }
-    } catch (JsonMappingException e) {
+    } catch (Exception e) {
       logger.error("Failed to Map orgTypeConfig to OrganisationType member", e);
-    } catch (JsonProcessingException e) {
-      logger.error("Failed to process orgTypeConfig to OrganisationType member", e);
     }
   }
 }

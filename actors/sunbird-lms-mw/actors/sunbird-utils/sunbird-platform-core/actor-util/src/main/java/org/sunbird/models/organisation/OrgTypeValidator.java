@@ -137,7 +137,7 @@ public class OrgTypeValidator {
         if(MapUtils.isEmpty(orgObject)) {
             return;
         }
-        if(orgObject.containsKey(JsonKey.ORGANISATION_TYPE)) {
+        if(orgObject.get(JsonKey.ORGANISATION_TYPE) != null) {
             int orgTypeValue = (int) orgObject.get(JsonKey.ORGANISATION_TYPE);
             for (OrganisationType orgTypeObj : orgTypeMap.values()) {
                 if ((orgTypeValue & orgTypeObj.getValue()) == orgTypeObj.getValue()) {

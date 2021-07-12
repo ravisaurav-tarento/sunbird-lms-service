@@ -134,13 +134,18 @@ public class OrgTypeValidator {
         if(MapUtils.isEmpty(orgTypeMap)) {
             return;
         }
-        int orgTypeValue = (int) orgObject.get(JsonKey.ORGANISATION_TYPE);
-        for (OrganisationType orgTypeObj : orgTypeMap.values()) {
-            if ((orgTypeValue & orgTypeObj.getValue()) == orgTypeObj.getValue()) {
-                for(String flagName : orgTypeObj.getFlagNameList()) {
-                    orgObject.put(flagName, true);
+        if(MapUtils.isEmpty(orgObject)) {
+            return;
+        }
+        if(orgObject.containsKey(JsonKey.ORGANISATION_TYPE)) {
+            int orgTypeValue = (int) orgObject.get(JsonKey.ORGANISATION_TYPE);
+            for (OrganisationType orgTypeObj : orgTypeMap.values()) {
+                if ((orgTypeValue & orgTypeObj.getValue()) == orgTypeObj.getValue()) {
+                    for (String flagName : orgTypeObj.getFlagNameList()) {
+                        orgObject.put(flagName, true);
+                    }
+                    break;
                 }
-                break;
             }
         }
 

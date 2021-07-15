@@ -697,7 +697,9 @@ public final class Util {
           "Util:getUserProfile: User data not available to save in ES for userId : " + userId);
     }
     userDetails.put(JsonKey.USERNAME, username);
-    userDetails.put(JsonKey.PROFILE_DETAILS, ProfileUtil.toMap(userDetails.get(JsonKey.PROFILE_DETAILS).toString()));
+    if(null != userDetails.get(JsonKey.PROFILE_DETAILS)) {
+      userDetails.put(JsonKey.PROFILE_DETAILS, ProfileUtil.toMap(userDetails.get(JsonKey.PROFILE_DETAILS).toString()));
+    }
     return userDetails;
   }
 

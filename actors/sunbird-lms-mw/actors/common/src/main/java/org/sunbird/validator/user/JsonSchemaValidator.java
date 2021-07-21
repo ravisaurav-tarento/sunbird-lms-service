@@ -21,6 +21,8 @@ import static org.sunbird.common.request.orgvalidator.BaseOrgRequestValidator.ER
 
 public class JsonSchemaValidator {
 
+    private static final String PRIMARY_EMAIL_FIELD="primaryEmail";
+
     private static LoggerUtil logger = new LoggerUtil(UserRequestValidator.class);
     private static Map<String, String> schemas = new HashMap<>();
 
@@ -41,15 +43,22 @@ public class JsonSchemaValidator {
         logger.info(null, String.format("schemas size :- " + schemas.size()));
     }
 
-    public static boolean validate(String entityType, String payload) throws Exception {
+    public static boolean validate(String entityType, JSONObject payload) throws Exception {
         boolean result = false;
         Schema schema = getEntitySchema(entityType);
-        JSONObject obj = new JSONObject(payload);
         try {
-            schema.validate(obj);
+            schema.validate(payload);
             result = true;
+            payload.put(JsonKey.MANDATORY_FIELDS_EXISTS, Boolean.TRUE);
+
         } catch (ValidationException e) {
-            throw new Exception(e.getMessage());
+            if(e.getAllMessages().toString().contains(PRIMARY_EMAIL_FIELD)){
+                throw new Exception(e.getAllMessages().toString());
+            }else{
+                logger.error("Mandatory attributes are not present",e);
+                payload.put(JsonKey.MANDATORY_FIELDS_EXISTS, Boolean.FALSE);
+
+            }
         }
         return result;
     }

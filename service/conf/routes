@@ -15,6 +15,7 @@ POST    /v2/user/signup                         @controllers.usermanagement.User
 PATCH   /v1/user/update					        @controllers.usermanagement.UserController.updateUser(request: play.mvc.Http.Request)
 PATCH   /private/user/v1/update                 @controllers.usermanagement.UserController.updateUser(request: play.mvc.Http.Request)
 PATCH   /v2/user/update                         @controllers.usermanagement.UserController.updateUserV2(request: play.mvc.Http.Request)
+GET     /v1/user/autocomplete/:key              @controllers.usermanagement.UserController.autoSearchUser(key:String, request: play.mvc.Http.Request)
 
 
 GET     /v1/user/read/:uid				        @controllers.usermanagement.UserController.getUserByIdV3(uid:String, request: play.mvc.Http.Request)

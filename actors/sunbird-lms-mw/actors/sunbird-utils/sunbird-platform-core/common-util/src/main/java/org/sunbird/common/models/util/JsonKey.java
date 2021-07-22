@@ -646,6 +646,8 @@ public final class JsonKey {
   public static final String FORCE_MIGRATION = "forceMigration";
   public static final String SOFT_DELETE_PREVIOUS_ORG = "softDeleteOldOrg";
   public static final String MANDATORY_FIELDS_EXISTS = "mandatoryFieldsExists";
+  public static final String MULTI_QUERY_SEARCH_FIELDS = "multiQuerySearchFields";
+
 
   private JsonKey() {}
 }

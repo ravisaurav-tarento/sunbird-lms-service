@@ -37,7 +37,7 @@ import scala.concurrent.Future;
  * @author Manzarul
  */
 @ActorConfig(
-  tasks = {"userSearch", "userSearchV2", "orgSearch", "orgSearchV2"},
+  tasks = {"userSearch", "userSearchV2", "orgSearch", "orgSearchV2", "userAutoSearch"},
   asyncTasks = {},
   dispatcher = "most-used-one-dispatcher"
 )
@@ -57,7 +57,9 @@ public class SearchHandlerActor extends BaseActor {
         && MapUtils.isNotEmpty(((Map<String, Object>) searchQueryMap.get(JsonKey.FILTERS)))) {
       ((Map<String, Object>) searchQueryMap.get(JsonKey.FILTERS)).remove(JsonKey.OBJECT_TYPE);
     }
-    if (request.getOperation().equalsIgnoreCase(ActorOperations.USER_SEARCH.getValue())
+    if (request.getOperation().equalsIgnoreCase(ActorOperations.USER_AUTO_SEARCH.getValue())) {
+      handleUserAutoSearch(request, EsType.user.getTypeName());
+    } else if (request.getOperation().equalsIgnoreCase(ActorOperations.USER_SEARCH.getValue())
         || request.getOperation().equalsIgnoreCase(ActorOperations.USER_SEARCH_V2.getValue())) {
       handleUserSearch(request, searchQueryMap, EsType.user.getTypeName());
     } else if (request.getOperation().equalsIgnoreCase(ActorOperations.ORG_SEARCH.getValue())
@@ -103,6 +105,29 @@ public class SearchHandlerActor extends BaseActor {
         }
       }
     }
+  }
+
+  private void handleUserAutoSearch(Request request, String filterObjectType) throws Exception{
+
+    String key = (String) request.getRequest().get(JsonKey.KEY);
+    Map<String, Object> searchQueryMap = new HashMap<>();
+    //prepare searchQuerymap
+    final String[] includeFields = {"profiledetails.personalDetails.firstname", "profiledetails.personalDetails.surname", "profiledetails.personalDetails.primaryEmail"};
+
+    Map<String, List<String>> querySearchFields = new HashMap();
+    querySearchFields.put(key, Arrays.asList(includeFields));
+    searchQueryMap.put(JsonKey.MULTI_QUERY_SEARCH_FIELDS, querySearchFields);
+    SearchDTO searchDto = Util.createSearchDto(searchQueryMap);
+    searchDto.setExcludedFields(Arrays.asList(ProjectUtil.excludes));
+    Future<Map<String, Object>> resultF =
+            esService.search(searchDto, filterObjectType, request.getRequestContext());
+    Map<String, Object> result =
+            (Map<String, Object>) ElasticSearchHelper.getResponseFromFuture(resultF);
+    Response response = new Response();
+    response.put(JsonKey.RESPONSE, result);
+    sender().tell(response, self());
+    generateSearchTelemetryEvent(searchDto, filterObjectType, result, request.getContext());
+
   }
 
   private void handleUserSearch(

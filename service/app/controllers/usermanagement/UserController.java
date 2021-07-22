@@ -1,5 +1,8 @@
 package controllers.usermanagement;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.BaseController;
 import controllers.usermanagement.validator.UserGetRequestValidator;
 import java.util.HashMap;
@@ -210,6 +213,18 @@ public class UserController extends BaseController {
         null,
         false,
         httpRequest);
+  }
+
+  public CompletionStage<Result> autoSearchUser(String key, Http.Request httpRequest) {
+     return handleSearchRequest(
+             ActorOperations.USER_AUTO_SEARCH.getValue(),
+             JsonNodeFactory.instance.objectNode(),
+             null,
+             key,
+             JsonKey.KEY,
+             getAllRequestHeaders(httpRequest),
+             null,
+             httpRequest);
   }
 
   public CompletionStage<Result> searchUser(Http.Request httpRequest) {

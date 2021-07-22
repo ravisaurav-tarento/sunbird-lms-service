@@ -235,6 +235,9 @@ public final class Util {
     if (searchQueryMap.containsKey(JsonKey.FIELDS)) {
       search.setFields((List<String>) searchQueryMap.get(JsonKey.FIELDS));
     }
+    if(searchQueryMap.containsKey(JsonKey.MULTI_QUERY_SEARCH_FIELDS)){
+      search.setMultiSearchFields((Map<String, List<String>>) searchQueryMap.get(JsonKey.MULTI_QUERY_SEARCH_FIELDS));
+    }
     if (searchQueryMap.containsKey(JsonKey.FILTERS)) {
       search.getAdditionalProperties().put(JsonKey.FILTERS, searchQueryMap.get(JsonKey.FILTERS));
     }

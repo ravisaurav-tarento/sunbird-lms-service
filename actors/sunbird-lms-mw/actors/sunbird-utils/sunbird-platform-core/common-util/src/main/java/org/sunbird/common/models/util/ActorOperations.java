@@ -88,6 +88,7 @@ public enum ActorOperations {
   CHECK_USER_EXISTENCEV2("checkUserExistenceV2"),
   UPDATE_USER_DECLARATIONS("updateUserDeclarations"),
   UPDATE_USER_CONSENT("updateUserConsent"),
+  USER_AUTO_SEARCH("userAutoSearch"),
   USER_SEARCH("userSearch"),
   USER_SEARCH_V2("userSearchV2"),
   ORG_SEARCH("orgSearch"),

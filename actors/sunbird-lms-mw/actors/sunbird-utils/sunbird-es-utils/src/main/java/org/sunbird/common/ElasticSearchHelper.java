@@ -22,14 +22,7 @@ import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.ExistsQueryBuilder;
-import org.elasticsearch.index.query.MatchQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.query.RangeQueryBuilder;
-import org.elasticsearch.index.query.TermQueryBuilder;
-import org.elasticsearch.index.query.TermsQueryBuilder;
+import org.elasticsearch.index.query.*;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
@@ -465,6 +458,22 @@ public class ElasticSearchHelper {
       return QueryBuilders.matchQuery(name, value);
     }
   }
+  /**
+   * This method return MultiMatchQueryBuilder Object with boosts if any provided
+   *
+   * @param name of the attribute
+   * @param value of the attribute
+   * @param boost for increasing the search parameters priority
+   * @return MultiMatchQueryBuilder
+   */
+  public static MultiMatchQueryBuilder createMultiMatchQuery(String query, String[] fields, Float boost) {
+    if (isNotNull(boost)) {
+      return QueryBuilders.multiMatchQuery(query, fields).boost(boost);
+    } else {
+      return QueryBuilders.multiMatchQuery(query, fields);
+    }
+  }
+
 
   /**
    * This method returns TermsQueryBuilder with boosts if any provided

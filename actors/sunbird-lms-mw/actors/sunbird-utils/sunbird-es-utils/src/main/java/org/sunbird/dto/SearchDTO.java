@@ -33,14 +33,14 @@ public class SearchDTO {
   private List<Map<String, Object>> groupQuery = new ArrayList<>();
   private List<String> mode = new ArrayList<>();
   //added for multiMatch search option
-  private Map<String,List<String>> querySearchFields = new HashMap<>();
+  private Map<String,List<String>> multiSearchFields = new HashMap<>();
 
-  public Map<String, List<String>> getQuerySearchFields() {
-    return querySearchFields;
+  public Map<String, List<String>> getMultiSearchFields() {
+    return multiSearchFields;
   }
 
-  public void setQuerySearchFields(Map<String, List<String>> querySearchFields) {
-    this.querySearchFields = querySearchFields;
+  public void setMultiSearchFields(Map<String, List<String>> multiSearchFields) {
+    this.multiSearchFields = multiSearchFields;
   }
 
   public List<Map<String, Object>> getGroupQuery() {

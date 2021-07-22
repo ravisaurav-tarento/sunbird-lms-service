@@ -432,8 +432,8 @@ public class ElasticSearchRestHighImpl implements ElasticSearchService {
       }
     }
     //apply multimatch on query
-    if (searchDTO.getQuerySearchFields().size() > 0) {
-      for (Map.Entry<String, List<String>> entry : searchDTO.getQuerySearchFields().entrySet()) {
+    if (searchDTO.getMultiSearchFields().size() > 0) {
+      for (Map.Entry<String, List<String>> entry : searchDTO.getMultiSearchFields().entrySet()) {
         query.should(ElasticSearchHelper.createMultiMatchQuery(entry.getKey(),entry.getValue().toArray(new String[entry.getValue().size()]),null));
       }
     }

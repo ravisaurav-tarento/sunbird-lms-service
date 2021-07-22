@@ -116,7 +116,7 @@ public class SearchHandlerActor extends BaseActor {
 
     Map<String, List<String>> querySearchFields = new HashMap();
     querySearchFields.put(key, Arrays.asList(includeFields));
-    searchQueryMap.put(JsonKey.QUERY_SEARCH_FIELDS, querySearchFields);
+    searchQueryMap.put(JsonKey.MULTI_QUERY_SEARCH_FIELDS, querySearchFields);
     SearchDTO searchDto = Util.createSearchDto(searchQueryMap);
     searchDto.setExcludedFields(Arrays.asList(ProjectUtil.excludes));
     Future<Map<String, Object>> resultF =

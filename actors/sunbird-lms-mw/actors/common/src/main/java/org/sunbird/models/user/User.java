@@ -68,22 +68,25 @@ public class User implements Serializable {
   private Map<String, String> allTncAccepted;
   private String profileUserType;
   private String profileLocation;
-  private String profiledetails;
+  private String profileDetails;
 
-  public String getProfiledetails() {
-    return profiledetails;
+  public String getProfileDetails() {
+    return profileDetails;
   }
 
-  public void setProfiledetails(Map profiledetails) {
-    if(MapUtils.isNotEmpty(profiledetails)){
+  public void setProfileDetails(Map profileDetails) {
+    if(MapUtils.isNotEmpty(profileDetails)){
       try{
-        ProfileUtil.appendIdToReferenceObjects(profiledetails);
-        this.profiledetails = new ObjectMapper().writeValueAsString(profiledetails);
+        ProfileUtil.appendIdToReferenceObjects(profileDetails);
+        this.profileDetails = new ObjectMapper().writeValueAsString(profileDetails);
       }catch (Exception e){
         logger.error( "User Exception " , e);
       }
     }
-
+  }
+  
+  public void setProfileDetails(String profileDetails) {
+    this.profileDetails = profileDetails;
   }
 
   public Map<String, String> getAllTncAccepted() {

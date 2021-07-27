@@ -249,7 +249,10 @@ public class UserManagementActor extends BaseActor {
     Map<String, Object> userMap = actorMessage.getRequest();
     logger.info(actorMessage.getRequestContext(), "Incoming update request body: " + userMap);
     userRequestValidator.validateUpdateUserRequest(actorMessage);
-    userProfileService.validateProfile(actorMessage);
+    if(null != actorMessage.getRequest().get(JsonKey.PROFILE_DETAILS)) {
+      userProfileService.validateProfile(actorMessage);
+      convertProfileObjToString(actorMessage);
+    }
     // update externalIds provider from channel to orgId
     UserUtil.updateExternalIdsProviderWithOrgId(userMap, actorMessage.getRequestContext());
     Map<String, Object> userDbRecord =
@@ -1770,6 +1773,21 @@ public class UserManagementActor extends BaseActor {
         }
         userMap.remove(JsonKey.PROFILE_LOCATION);
       }
+    }
+  }
+  
+  private void convertProfileObjToString(Request actorMessage) {
+    //Convert the profile object to String -- if it is available.
+    Object profileObject = actorMessage.getRequest().get(JsonKey.PROFILE_DETAILS);
+    try {
+      String profileStr = mapper.writeValueAsString(profileObject);
+      actorMessage.getRequest().put(JsonKey.PROFILE_DETAILS, profileStr);
+    } catch(Exception e) {
+      throw new ProjectCommonException(
+              ResponseCode.invalidValue.getErrorCode(),
+              ProjectUtil.formatMessage(
+                      ResponseCode.invalidValue.getErrorMessage(), JsonKey.PROFILE_DETAILS),
+              ResponseCode.CLIENT_ERROR.getResponseCode());
     }
   }
 }

@@ -311,7 +311,7 @@ public final class JsonKey {
   public static final String URL_ACTION = "url_action";
   public static final String URL_ACTION_ID = "url_action_ids";
   public static final String USER = "user";
-  public static final String PROFILE_DETAILS = "profiledetails";
+  public static final String PROFILE_DETAILS = "profileDetails";
 
   public static final String USER_ACTION_ROLE = "user_action_role";
   public static final String USER_DB = "user_db";

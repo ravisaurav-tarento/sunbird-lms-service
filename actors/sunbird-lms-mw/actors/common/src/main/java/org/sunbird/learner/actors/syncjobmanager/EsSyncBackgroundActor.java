@@ -27,6 +27,7 @@ import org.sunbird.common.responsecode.ResponseCode;
 import org.sunbird.helper.ServiceFactory;
 import org.sunbird.learner.util.Util;
 import org.sunbird.learner.util.Util.DbInfo;
+import org.sunbird.models.organisation.OrgTypeValidator;
 import scala.concurrent.Future;
 
 /** Background sync of data between Cassandra and Elastic Search. */
@@ -129,6 +130,7 @@ public class EsSyncBackgroundActor extends BaseActor {
                     + map.get(JsonKey.ID));
             String esResponse = "";
             if (objectType.equals(JsonKey.ORGANISATION)) {
+              OrgTypeValidator.getInstance().updateOrganisationTypeFlags(map);
               esResponse =
                   saveDataToEs(
                       getType(objectType),

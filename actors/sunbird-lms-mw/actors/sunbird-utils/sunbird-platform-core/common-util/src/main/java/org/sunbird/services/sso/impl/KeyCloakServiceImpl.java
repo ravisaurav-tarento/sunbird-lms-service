@@ -9,7 +9,11 @@ import java.security.KeyFactory;
 import java.security.PublicKey;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.Map;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.keycloak.RSATokenVerifier;
 import org.keycloak.admin.client.Keycloak;
@@ -158,11 +162,11 @@ public class KeyCloakServiceImpl implements SSOManager {
       }
     } catch (Exception e) {
       if(e instanceof ClientErrorException) {
-        handleClientErrorException((ClientErrorException) e);
+        handleClientErrorException(context, (ClientErrorException) e);
       } else {
         Throwable cause = e.getCause();
         if (cause instanceof ClientErrorException) {
-          handleClientErrorException((ClientErrorException) cause);
+          handleClientErrorException(context, (ClientErrorException) cause);
         } else {
           e.printStackTrace();
         }
@@ -175,16 +179,18 @@ public class KeyCloakServiceImpl implements SSOManager {
     }
   }
 
-  private void handleClientErrorException(ClientErrorException e) {
+  private void handleClientErrorException(RequestContext context, ClientErrorException e) {
     Response response = e.getResponse();
     try {
-      System.out.println("status: " + response.getStatus());
-      System.out.println("reason: " + response.getStatusInfo().getReasonPhrase());
-      Map error = JsonSerialization.readValue((ByteArrayInputStream) response.getEntity(), Map.class);
-      System.out.println("error: " + error.get("error"));
-      System.out.println("error_description: " + error.get("error_description"));
-    } catch (IOException ex) {
-      ex.printStackTrace();
+      logger.info(context, "status: " + response.getStatus());
+      logger.info(context,"reason: " + response.getStatusInfo().getReasonPhrase());
+      Map<String, Object> error = (new ObjectMapper()).readValue((ByteArrayInputStream) response.getEntity(),
+              new TypeReference<HashMap<String, Object>>() {
+              });
+      logger.info(context,"error: " + error.get("error"));
+      logger.info(context,"error_description: " + error.get("error_description"));
+    } catch (Exception ex) {
+      logger.error("Failed to handleClientErrorException. ", ex);
     }
   }
 

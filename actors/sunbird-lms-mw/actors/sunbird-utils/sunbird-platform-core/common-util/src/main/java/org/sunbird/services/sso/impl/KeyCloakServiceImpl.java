@@ -3,6 +3,8 @@ package org.sunbird.services.sso.impl;
 import static java.util.Arrays.asList;
 import static org.sunbird.common.models.util.ProjectUtil.isNotNull;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.security.KeyFactory;
 import java.security.PublicKey;
 import java.security.spec.X509EncodedKeySpec;
@@ -15,11 +17,15 @@ import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.representations.AccessToken;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
+import org.keycloak.util.JsonSerialization;
 import org.sunbird.common.exception.ProjectCommonException;
 import org.sunbird.common.models.util.*;
 import org.sunbird.common.request.RequestContext;
 import org.sunbird.common.responsecode.ResponseCode;
 import org.sunbird.services.sso.SSOManager;
+
+import javax.ws.rs.ClientErrorException;
+import javax.ws.rs.core.Response;
 
 /**
  * Single sign out service implementation with Key Cloak.
@@ -151,11 +157,34 @@ public class KeyCloakServiceImpl implements SSOManager {
         resource.update(ur);
       }
     } catch (Exception e) {
+      if(e instanceof ClientErrorException) {
+        handleClientErrorException((ClientErrorException) e);
+      } else {
+        Throwable cause = e.getCause();
+        if (cause instanceof ClientErrorException) {
+          handleClientErrorException((ClientErrorException) cause);
+        } else {
+          e.printStackTrace();
+        }
+      }
       logger.error(
           context,
           "makeUserActiveOrInactive:error occurred while blocking or unblocking user: ",
           e);
       ProjectUtil.createAndThrowInvalidUserDataException();
+    }
+  }
+
+  private void handleClientErrorException(ClientErrorException e) {
+    Response response = e.getResponse();
+    try {
+      System.out.println("status: " + response.getStatus());
+      System.out.println("reason: " + response.getStatusInfo().getReasonPhrase());
+      Map error = JsonSerialization.readValue((ByteArrayInputStream) response.getEntity(), Map.class);
+      System.out.println("error: " + error.get("error"));
+      System.out.println("error_description: " + error.get("error_description"));
+    } catch (IOException ex) {
+      ex.printStackTrace();
     }
   }
 

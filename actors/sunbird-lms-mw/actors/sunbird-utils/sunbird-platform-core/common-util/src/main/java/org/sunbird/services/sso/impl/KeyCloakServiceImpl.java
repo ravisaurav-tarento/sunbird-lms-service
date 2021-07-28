@@ -160,16 +160,14 @@ public class KeyCloakServiceImpl implements SSOManager {
       if (isNotNull(resource)) {
         resource.update(ur);
       }
+    } catch(ClientErrorException ce) {
+      handleClientErrorException(context, ce);
     } catch (Exception e) {
-      if(e instanceof ClientErrorException) {
-        handleClientErrorException(context, (ClientErrorException) e);
+      Throwable cause = e.getCause();
+      if (cause instanceof ClientErrorException) {
+        handleClientErrorException(context, (ClientErrorException) cause);
       } else {
-        Throwable cause = e.getCause();
-        if (cause instanceof ClientErrorException) {
-          handleClientErrorException(context, (ClientErrorException) cause);
-        } else {
-          e.printStackTrace();
-        }
+        e.printStackTrace();
       }
       logger.error(
           context,

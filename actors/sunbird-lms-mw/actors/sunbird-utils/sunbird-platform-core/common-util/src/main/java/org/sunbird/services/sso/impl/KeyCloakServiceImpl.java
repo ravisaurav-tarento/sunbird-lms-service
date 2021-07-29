@@ -1,19 +1,5 @@
 package org.sunbird.services.sso.impl;
 
-import static java.util.Arrays.asList;
-import static org.sunbird.common.models.util.ProjectUtil.isNotNull;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.security.KeyFactory;
-import java.security.PublicKey;
-import java.security.spec.X509EncodedKeySpec;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
-
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.keycloak.RSATokenVerifier;
 import org.keycloak.admin.client.Keycloak;
@@ -21,15 +7,23 @@ import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.representations.AccessToken;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
-import org.keycloak.util.JsonSerialization;
 import org.sunbird.common.exception.ProjectCommonException;
-import org.sunbird.common.models.util.*;
+import org.sunbird.common.models.util.JsonKey;
+import org.sunbird.common.models.util.KeyCloakConnectionProvider;
+import org.sunbird.common.models.util.LoggerUtil;
+import org.sunbird.common.models.util.ProjectUtil;
 import org.sunbird.common.request.RequestContext;
 import org.sunbird.common.responsecode.ResponseCode;
 import org.sunbird.services.sso.SSOManager;
 
-import javax.ws.rs.ClientErrorException;
-import javax.ws.rs.core.Response;
+import java.security.KeyFactory;
+import java.security.PublicKey;
+import java.security.spec.X509EncodedKeySpec;
+import java.util.Base64;
+import java.util.Map;
+
+import static java.util.Arrays.asList;
+import static org.sunbird.common.models.util.ProjectUtil.isNotNull;
 
 /**
  * Single sign out service implementation with Key Cloak.
@@ -160,35 +154,12 @@ public class KeyCloakServiceImpl implements SSOManager {
       if (isNotNull(resource)) {
         resource.update(ur);
       }
-    } catch(ClientErrorException ce) {
-      handleClientErrorException(context, ce);
     } catch (Exception e) {
-      Throwable cause = e.getCause();
-      if (cause instanceof ClientErrorException) {
-        handleClientErrorException(context, (ClientErrorException) cause);
-      } else {
-        e.printStackTrace();
-      }
       logger.error(
           context,
           "makeUserActiveOrInactive:error occurred while blocking or unblocking user: ",
           e);
       ProjectUtil.createAndThrowInvalidUserDataException();
-    }
-  }
-
-  private void handleClientErrorException(RequestContext context, ClientErrorException e) {
-    Response response = e.getResponse();
-    try {
-      logger.info(context, "status: " + response.getStatus());
-      logger.info(context,"reason: " + response.getStatusInfo().getReasonPhrase());
-      Map<String, Object> error = (new ObjectMapper()).readValue((ByteArrayInputStream) response.getEntity(),
-              new TypeReference<HashMap<String, Object>>() {
-              });
-      logger.info(context,"error: " + error.get("error"));
-      logger.info(context,"error_description: " + error.get("error_description"));
-    } catch (Exception ex) {
-      logger.error("Failed to handleClientErrorException. ", ex);
     }
   }
 

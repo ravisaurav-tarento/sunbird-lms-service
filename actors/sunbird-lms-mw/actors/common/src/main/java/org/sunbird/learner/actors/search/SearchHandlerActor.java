@@ -112,7 +112,7 @@ public class SearchHandlerActor extends BaseActor {
     String key = (String) request.getRequest().get(JsonKey.KEY);
     Map<String, Object> searchQueryMap = new HashMap<>();
     //prepare searchQuerymap
-    final String[] includeFields = {"profiledetails.personalDetails.firstname", "profiledetails.personalDetails.surname", "profiledetails.personalDetails.primaryEmail"};
+    final String[] includeFields = {"profileDetails.personalDetails.firstname", "profileDetails.personalDetails.surname", "profileDetails.personalDetails.primaryEmail"};
 
     Map<String, List<String>> querySearchFields = new HashMap();
     querySearchFields.put(key, Arrays.asList(includeFields));

@@ -134,9 +134,8 @@ public class BackgroundJobManager extends BaseActor {
               actorMessage.getRequestContext());
       List<Map<String, Object>> orgList =
           (List<Map<String, Object>>) orgResponse.getResult().get(JsonKey.RESPONSE);
-      Map<String, Object> esMap = new HashMap<>();
       if (!(orgList.isEmpty())) {
-        esMap = orgList.get(0);
+        Map<String, Object> esMap = orgList.get(0);
         esMap.remove(JsonKey.CONTACT_DETAILS);
         String orgLocation = (String) esMap.get(JsonKey.ORG_LOCATION);
         List orgLocationList = new ArrayList<>();
@@ -152,15 +151,15 @@ public class BackgroundJobManager extends BaseActor {
         }
         esMap.put(JsonKey.ORG_LOCATION, orgLocationList);
         OrgTypeValidator.getInstance().updateOrganisationTypeFlags(esMap);
+        insertDataToElastic(
+                ProjectUtil.EsIndex.sunbird.getIndexName(),
+                ProjectUtil.EsType.organisation.getTypeName(),
+                id,
+                esMap,
+                actorMessage.getRequestContext());
       }
       // making call to register tag
       registertag(id, "{}", headerMap, actorMessage.getRequestContext());
-      insertDataToElastic(
-          ProjectUtil.EsIndex.sunbird.getIndexName(),
-          ProjectUtil.EsType.organisation.getTypeName(),
-          id,
-          esMap,
-          actorMessage.getRequestContext());
     }
   }
 

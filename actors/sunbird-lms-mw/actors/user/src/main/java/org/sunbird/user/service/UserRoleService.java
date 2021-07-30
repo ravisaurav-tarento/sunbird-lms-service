@@ -6,4 +6,5 @@ import org.sunbird.common.request.RequestContext;
 
 public interface UserRoleService {
   List<Map<String, Object>> updateUserRole(Map userRequest, RequestContext context);
+  List<Map<String, Object>> readUserRole(String userId, RequestContext context);
 }

@@ -31,6 +31,12 @@ public class UserRoleServiceImpl implements UserRoleService {
     return roleService;
   }
 
+  public List<Map<String, Object>> readUserRole(String userId, RequestContext context) {
+    List<Map<String, Object>> userRoleList = new ArrayList<>();
+    userRoleList = userRoleDao.getUserRoles(userId, null, context);
+    return userRoleList;
+  }
+
   public List<Map<String, Object>> updateUserRole(Map userRequest, RequestContext context) {
     List<Map<String, Object>> userRoleListResponse = new ArrayList<>();
     List<String> userRolesToInsert = new ArrayList<>();

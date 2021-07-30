@@ -77,6 +77,7 @@ public class UserRoleActor extends UserBaseActor {
       response.put(JsonKey.RESPONSE, JsonKey.SUCCESS);
     }
     sender().tell(response, self());
+    userRolesList = userRoleService.readUserRole((String) requestMap.get(JsonKey.USER_ID), actorMessage.getRequestContext());
     if (((String) response.get(JsonKey.RESPONSE)).equalsIgnoreCase(JsonKey.SUCCESS)) {
       syncUserRoles(
           JsonKey.USER,

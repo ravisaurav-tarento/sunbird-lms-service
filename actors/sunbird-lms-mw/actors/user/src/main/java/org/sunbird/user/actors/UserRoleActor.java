@@ -1,6 +1,9 @@
 package org.sunbird.user.actors;
 
 import java.util.*;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.StringUtils;
 import org.sunbird.actor.router.ActorConfig;
 import org.sunbird.cassandra.CassandraOperation;
 import org.sunbird.common.exception.ProjectCommonException;
@@ -78,6 +81,24 @@ public class UserRoleActor extends UserBaseActor {
     }
     sender().tell(response, self());
     userRolesList = userRoleService.readUserRole((String) requestMap.get(JsonKey.USER_ID), actorMessage.getRequestContext());
+    ObjectMapper mapper = new ObjectMapper();
+    userRolesList
+            .stream()
+            .forEach(
+                    userRole -> {
+                      try {
+                        String dbScope = (String) userRole.get(JsonKey.SCOPE);
+                        if (StringUtils.isNotBlank(dbScope)) {
+                          List<Map<String, String>> scope = mapper.readValue(dbScope, ArrayList.class);
+                          userRole.put(JsonKey.SCOPE, scope);
+                        }
+                      } catch (Exception e) {
+                        logger.error(
+                                actorMessage.getRequestContext(),
+                                "Exception because of mapper read value" + userRole.get(JsonKey.SCOPE),
+                                e);
+                      }
+                    });
     if (((String) response.get(JsonKey.RESPONSE)).equalsIgnoreCase(JsonKey.SUCCESS)) {
       syncUserRoles(
           JsonKey.USER,

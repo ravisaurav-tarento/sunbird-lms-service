@@ -647,7 +647,8 @@ public final class JsonKey {
   public static final String SOFT_DELETE_PREVIOUS_ORG = "softDeleteOldOrg";
   public static final String MANDATORY_FIELDS_EXISTS = "mandatoryFieldsExists";
   public static final String MULTI_QUERY_SEARCH_FIELDS = "multiQuerySearchFields";
-
+  public static final String NOTIFY_USER_MIGRATION = "notifyMigration";
+  public static final String DISABLE_MULTIPLE_ORG_ROLE = "sunbird_disable_multiple_org_role";
 
   private JsonKey() {}
 }

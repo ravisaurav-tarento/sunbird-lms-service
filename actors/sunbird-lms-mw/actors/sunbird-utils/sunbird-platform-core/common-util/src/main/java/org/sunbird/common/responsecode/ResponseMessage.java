@@ -211,6 +211,7 @@ public interface ResponseMessage {
     String INVALID_LOCATION_TYPE = "Invalid location type {0} is supplied.Supported values are {1}";
     String USER_TYPE_CONFIG_IS_EMPTY = "userType config is empty for the statecode {0}";
     String ROLE_SAVE_ERROR = "Error while saving role";
+    String ROLE_PROCESSING_INVALID_ORG = "Error while processing assign role. Invalid Organisation Id";
   }
 
   interface Key {
@@ -379,5 +380,6 @@ public interface ResponseMessage {
     String INVALID_USER_INFO_VALUE = "INVALID_USER_INFO_VALUE";
     String INVALID_CONSENT_STATUS = "INVALID_CONSENT_STATUS";
     String ROLE_SAVE_ERROR = "ROLE_SAVE_ERROR";
+    String ROLE_PROCESSING_INVALID_ORG = "ROLE_PROCESSING_INVALID_ORG_ID";
   }
 }

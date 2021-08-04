@@ -88,7 +88,7 @@ public class TenantMigrationActor extends BaseActor {
     }
     switch (operation) {
       case "userTenantMigrate":
-        migrateUser(request, true);
+        migrateUser(request);
         break;
       case "userSelfDeclaredTenantMigrate":
         migrateSelfDeclaredUser(request);
@@ -127,7 +127,7 @@ public class TenantMigrationActor extends BaseActor {
     } else {
       // First migrating user, if migration success, then status gets updated as VALIDATED.
       try {
-        migrateUser(request, true);
+        migrateUser(request);
       } catch (ProjectCommonException pce) {
         logger.error(
             request.getRequestContext(), "TenantMigrationActor:migrateUser user failed.", pce);
@@ -156,7 +156,7 @@ public class TenantMigrationActor extends BaseActor {
   }
 
   @SuppressWarnings("unchecked")
-  private void migrateUser(Request request, boolean notify) {
+  private void migrateUser(Request request) {
     logger.info(request.getRequestContext(), "TenantMigrationActor:migrateUser called.");
     Map<String, Object> reqMap = new HashMap<>(request.getRequest());
     Map<String, Object> targetObject = null;
@@ -232,6 +232,10 @@ public class TenantMigrationActor extends BaseActor {
     // save user data to ES
     saveUserDetailsToEs(
         (String) request.getRequest().get(JsonKey.USER_ID), request.getRequestContext());
+    boolean notify = true;
+    if (null != request.getRequest().get(JsonKey.NOTIFY_USER_MIGRATION)) {
+      notify = (boolean) request.getRequest().get(JsonKey.NOTIFY_USER_MIGRATION);
+    }
     if (notify) {
       notify(userDetails, request.getRequestContext());
     }
@@ -721,7 +725,8 @@ public class TenantMigrationActor extends BaseActor {
         request.getRequestContext(),
         "TenantMigrationActor:selfMigrate:request prepared for user migration:"
             + request.getRequest());
-    migrateUser(request, false);
+    request.getRequest().put(JsonKey.NOTIFY_USER_MIGRATION, false);
+    migrateUser(request);
     Map<String, Object> propertiesMap = new HashMap<>();
     propertiesMap.put(JsonKey.CLAIM_STATUS, ClaimStatus.CLAIMED.getValue());
     propertiesMap.put(JsonKey.UPDATED_ON, new Timestamp(System.currentTimeMillis()));

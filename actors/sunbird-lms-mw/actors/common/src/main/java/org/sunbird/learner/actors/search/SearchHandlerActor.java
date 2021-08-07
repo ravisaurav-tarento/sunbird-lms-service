@@ -123,6 +123,14 @@ public class SearchHandlerActor extends BaseActor {
             esService.search(searchDto, filterObjectType, request.getRequestContext());
     Map<String, Object> result =
             (Map<String, Object>) ElasticSearchHelper.getResponseFromFuture(resultF);
+    List<Map<String, Object>> userMapList =
+            (List<Map<String, Object>>) result.get(JsonKey.CONTENT);
+    List<String> fields = (List<String>) searchQueryMap.get(JsonKey.FIELDS);
+    Map<String, Object> userDefaultFieldValue = Util.getUserDefaultValue();
+    getDefaultValues(userDefaultFieldValue, fields);
+    for (Map<String, Object> userMap : userMapList) {
+      UserUtility.decryptUserDataFrmES(userMap);
+    }
     Response response = new Response();
     response.put(JsonKey.RESPONSE, result);
     sender().tell(response, self());

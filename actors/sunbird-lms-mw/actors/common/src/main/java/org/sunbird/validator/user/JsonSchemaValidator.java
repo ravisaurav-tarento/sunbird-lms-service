@@ -70,7 +70,7 @@ public class JsonSchemaValidator {
             String definitionContent = schemas.get(entityType);
             JSONObject rawSchema = new JSONObject(definitionContent);
 
-            SchemaLoader schemaLoader = SchemaLoader.builder().useDefaults(true)
+            SchemaLoader schemaLoader = SchemaLoader.builder()
                     .schemaJson(rawSchema).build();
             schema = schemaLoader.load().build();
         } catch (Exception ioe) {

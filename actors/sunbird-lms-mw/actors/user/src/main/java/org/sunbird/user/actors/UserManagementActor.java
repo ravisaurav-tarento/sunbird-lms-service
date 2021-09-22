@@ -69,6 +69,7 @@ import org.sunbird.user.dao.UserOrgDao;
 import org.sunbird.user.dao.UserSelfDeclarationDao;
 import org.sunbird.user.dao.impl.UserOrgDaoImpl;
 import org.sunbird.user.dao.impl.UserSelfDeclarationDaoImpl;
+import org.sunbird.user.profile.ProfileUtil;
 import org.sunbird.user.service.*;
 import org.sunbird.user.service.impl.UserLookUpServiceImpl;
 import org.sunbird.user.service.impl.UserProfileService;

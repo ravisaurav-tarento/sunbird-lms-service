@@ -282,6 +282,14 @@ public class UserManagementActor extends BaseActor {
     // Check if the user is Custodian Org user
     boolean isCustodianOrgUser = isCustodianOrgUser((String) userDbRecord.get(JsonKey.ROOT_ORG_ID));
     encryptExternalDetails(userMap, userDbRecord);
+    try {
+        Map map = ProfileUtil.toMap(userMap.get(JsonKey.PROFILE_DETAILS).toString());
+        ProfileUtil.appendIdToReferenceObjects(map);
+        userMap.put(JsonKey.PROFILE_DETAILS, ProfileUtil.mapper.writeValueAsString(map));
+    } catch (Exception e) {
+        e.printStackTrace();
+        logger.error("User profile casting exception ", e);
+    }
     User user = mapper.convertValue(userMap, User.class);
     UserUtil.validateExternalIdsForUpdateUser(
         user, isCustodianOrgUser, actorMessage.getRequestContext());

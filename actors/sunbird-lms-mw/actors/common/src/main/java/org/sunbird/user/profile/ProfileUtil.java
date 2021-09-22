@@ -29,7 +29,8 @@ public class ProfileUtil {
                 if (((ArrayList) entry.getValue()).get(0) instanceof HashMap) {
                     List<Map<String, Object>> list = (List<Map<String, Object>>) entry.getValue();
                     for (Map object : list) {
-                        object.put(JsonKey.OSID, UUID.randomUUID().toString());
+                        if(object.get(JsonKey.OSID)==null)
+                            object.put(JsonKey.OSID, UUID.randomUUID().toString());                    
                     }
                 }
             }

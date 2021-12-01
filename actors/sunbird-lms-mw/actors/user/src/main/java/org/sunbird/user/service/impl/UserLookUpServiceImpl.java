@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.sunbird.cassandra.CassandraOperation;
 import org.sunbird.common.exception.ProjectCommonException;
 import org.sunbird.common.models.response.Response;
@@ -65,6 +66,13 @@ public class UserLookUpServiceImpl implements UserLookupService {
     if (StringUtils.isNotBlank(email)) {
       List<Map<String, Object>> userMapList = userLookupDao.getEmailByType(email, context);
       if (!userMapList.isEmpty()) {
+        logger.info("userMapList is not null... returned object size: " + userMapList.size());
+        try {
+          for(Map<String, Object> userMap : userMapList) {
+            logger.info("User Details -> " + (new ObjectMapper()).writeValueAsString(userMap));
+          }
+        }catch (Exception e) {
+        }
         if (opType.equalsIgnoreCase(JsonKey.CREATE)) {
           ProjectCommonException.throwClientErrorException(ResponseCode.emailInUse, null);
         } else {

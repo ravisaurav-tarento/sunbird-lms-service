@@ -77,6 +77,7 @@ public class UserLookupDaoImpl implements UserLookupDao {
 
   public List<Map<String, Object>> getRecordByType(
       String type, String value, boolean encrypt, RequestContext context) {
+    String origValue = value;
     if (encrypt) {
       try {
         value = encryptionService.encryptData(value, context);
@@ -84,6 +85,7 @@ public class UserLookupDaoImpl implements UserLookupDao {
         logger.info(context, "Exception occurred while encrypting email/phone " + e);
       }
     }
+    logger.info("Email: " + origValue + ", EncryptedEmail: " + value);
     Map<String, Object> reqMap = new HashMap<>();
     reqMap.put(JsonKey.TYPE, type);
     reqMap.put(JsonKey.VALUE, value);

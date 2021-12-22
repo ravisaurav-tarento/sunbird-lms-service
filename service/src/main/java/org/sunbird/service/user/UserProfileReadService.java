@@ -16,11 +16,11 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.sunbird.actor.organisation.validator.OrgTypeValidator;
 import org.sunbird.exception.ProjectCommonException;
 import org.sunbird.exception.ResponseCode;
 import org.sunbird.keys.JsonKey;
 import org.sunbird.logging.LoggerUtil;
-import org.sunbird.model.organisation.OrgTypeEnum;
 import org.sunbird.operations.ActorOperations;
 import org.sunbird.request.Request;
 import org.sunbird.request.RequestContext;
@@ -35,6 +35,7 @@ import org.sunbird.util.ProjectUtil;
 import org.sunbird.util.UserFlagUtil;
 import org.sunbird.util.UserUtility;
 import org.sunbird.util.Util;
+import org.sunbird.util.user.ProfileUtil;
 import org.sunbird.util.user.UserUtil;
 
 public class UserProfileReadService {
@@ -80,6 +81,9 @@ public class UserProfileReadService {
     }else{
       result.putAll(Util.getUserDefaultValue());
     }
+    //Added the profileDetails translation
+    result.put(JsonKey.PROFILE_DETAILS, ProfileUtil.toMap(result.get(JsonKey.PROFILE_DETAILS).toString()));
+    OrgTypeValidator.getInstance().updateOrganisationTypeFlags(rootOrg);
     result.put(JsonKey.ROOT_ORG, rootOrg);
     Map<String, List<String>> userOrgRoles = null;
     List<Map<String, Object>> userRolesList =
@@ -143,6 +147,8 @@ public class UserProfileReadService {
     appendMinorFlag(result);
     // For Backward compatibility , In ES we were sending identifier field
     result.put(JsonKey.IDENTIFIER, userId);
+
+    mapUserRoles(result);
 
     Response response = new Response();
     response.put(JsonKey.RESPONSE, result);
@@ -632,7 +638,7 @@ public class UserProfileReadService {
         if (null != orgInfo.get(JsonKey.ORGANISATION_TYPE)) {
           int orgType = (int) orgInfo.get(JsonKey.ORGANISATION_TYPE);
           boolean isSchool =
-              (orgType == OrgTypeEnum.getValueByType(OrgTypeEnum.SCHOOL.getType())) ? true : false;
+              (orgType == OrgTypeValidator.getInstance().getValueByType(JsonKey.ORG_TYPE_SCHOOL)) ? true : false;
           usrOrg.put(JsonKey.IS_SCHOOL, isSchool);
         }
         if (MapUtils.isNotEmpty(locationInfoMap)) {
@@ -654,5 +660,19 @@ public class UserProfileReadService {
       }
     }
     return retList;
+  }
+
+  private void mapUserRoles(Map<String, Object> result) {
+    List<Map<String, Object>> organisations = (List<Map<String, Object>>) result.get(JsonKey.ORGANISATIONS);
+    List<String> roleList = new ArrayList<String>();
+    for(Map<String, Object> org : organisations) {
+      boolean isDeleted = (boolean) org.get(JsonKey.IS_DELETED);
+      if(!isDeleted) {
+        roleList.addAll((List<String>)org.get(JsonKey.ROLES));
+      }
+    }
+    if(CollectionUtils.isNotEmpty(roleList)) {
+      result.put(JsonKey.ROLES, roleList);
+    }
   }
 }

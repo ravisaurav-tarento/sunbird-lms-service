@@ -12,13 +12,13 @@ import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.sunbird.actor.core.BaseActor;
+import org.sunbird.actor.organisation.validator.OrgTypeValidator;
 import org.sunbird.common.ElasticSearchHelper;
 import org.sunbird.dto.SearchDTO;
 import org.sunbird.exception.ProjectCommonException;
 import org.sunbird.exception.ResponseCode;
 import org.sunbird.exception.ResponseMessage;
 import org.sunbird.keys.JsonKey;
-import org.sunbird.model.organisation.OrgTypeEnum;
 import org.sunbird.operations.ActorOperations;
 import org.sunbird.request.Request;
 import org.sunbird.request.RequestContext;
@@ -56,6 +56,9 @@ public class SearchHandlerActor extends BaseActor {
     }
     String operation = request.getOperation();
     switch (operation) {
+      case "userAutoSearch":
+        handleUserAutoSearch(request);
+        break;
       case "userSearch":
       case "userSearchV2":
       case "userSearchV3":
@@ -105,6 +108,33 @@ public class SearchHandlerActor extends BaseActor {
         }
       }
     }
+  }
+
+  private void handleUserAutoSearch(Request request) throws Exception {
+    String key = (String) request.getRequest().get(JsonKey.KEY);
+    Map<String, Object> searchQueryMap = new HashMap<>();
+    //prepare searchQuerymap
+    final String[] includeFields = { "profileDetails.personalDetails.firstname",
+            "profileDetails.personalDetails.surname",
+            "profileDetails.personalDetails.primaryEmail" };
+    Map<String, List<String>> querySearchFields = new HashMap();
+    querySearchFields.put(key, Arrays.asList(includeFields));
+    searchQueryMap.put(JsonKey.MULTI_QUERY_SEARCH_FIELDS, querySearchFields);
+    SearchDTO searchDto = ElasticSearchHelper.createSearchDTO(searchQueryMap);
+    searchDto.setExcludedFields(Arrays.asList(ProjectUtil.excludes));
+    Map<String, Object> result = userService.searchUser(searchDto, request.getRequestContext());
+    List<Map<String, Object>> userMapList =
+            (List<Map<String, Object>>) result.get(JsonKey.CONTENT);
+    List<String> fields = (List<String>) searchQueryMap.get(JsonKey.FIELDS);
+    Map<String, Object> userDefaultFieldValue = Util.getUserDefaultValue();
+    getDefaultValues(userDefaultFieldValue, fields);
+    for (Map<String, Object> userMap : userMapList) {
+      UserUtility.decryptUserDataFrmES(userMap);
+    }
+    Response response = new Response();
+    response.put(JsonKey.RESPONSE, result);
+    sender().tell(response, self());
+    generateSearchTelemetryEvent(searchDto, ProjectUtil.EsType.user.getTypeName(), result, request.getContext());
   }
 
   private void handleUserSearch(Request request, Map<String, Object> searchQueryMap)
@@ -297,7 +327,7 @@ public class SearchHandlerActor extends BaseActor {
                             int orgType = (int) org.get(JsonKey.ORGANISATION_TYPE);
                             boolean isSchool =
                                 (orgType
-                                        == OrgTypeEnum.getValueByType(OrgTypeEnum.SCHOOL.getType()))
+                                        == OrgTypeValidator.getInstance().getValueByType(JsonKey.ORG_TYPE_SCHOOL))
                                     ? true
                                     : false;
                             org.put(JsonKey.IS_SCHOOL, isSchool);

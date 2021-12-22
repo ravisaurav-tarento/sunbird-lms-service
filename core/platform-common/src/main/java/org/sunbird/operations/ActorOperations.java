@@ -92,7 +92,8 @@ public enum ActorOperations {
   ORG_SEARCH_V2("orgSearchV2"),
   USER_LOOKUP("userLookup"),
   GET_USER_CONSENT("getUserConsent"),
-  GET_USER_ROLES_BY_ID("getUserRolesById");
+  GET_USER_ROLES_BY_ID("getUserRolesById"),
+  USER_AUTO_SEARCH("userAutoSearch");
 
   private String value;
 

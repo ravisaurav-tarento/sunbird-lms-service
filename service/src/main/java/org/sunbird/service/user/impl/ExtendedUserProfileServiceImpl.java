@@ -1,0 +1,34 @@
+package org.sunbird.service.user.impl;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.sunbird.exception.ProjectCommonException;
+import org.sunbird.exception.ResponseCode;
+import org.sunbird.keys.JsonKey;
+import org.sunbird.request.Request;
+import org.sunbird.service.user.ExtendedUserProfileService;
+import org.sunbird.util.ProjectUtil;
+import org.sunbird.util.user.UserExtendedProfileSchemaValidator;
+
+public class ExtendedUserProfileServiceImpl implements ExtendedUserProfileService {
+    private static final String SCHEMA = ProjectUtil.getConfigValue("schema");
+    private static final ObjectMapper mapper = new ObjectMapper();
+
+    @Override
+    public void validateProfile(Request userRequest) {
+        if (userRequest!=null && userRequest.get(JsonKey.PROFILE_DETAILS)!=null) {
+            try{
+                String userProfile = mapper.writeValueAsString(userRequest.getRequest().get(JsonKey.PROFILE_DETAILS));
+                //TOOD - pass proper object
+                UserExtendedProfileSchemaValidator.validate(SCHEMA, null);
+
+            } catch (Exception e){
+                e.printStackTrace();
+                //TODO - Need to find proper error message
+                throw new ProjectCommonException(
+                        ResponseCode.extendUserProfileNotLoaded.getErrorCode(),
+                        ResponseCode.extendUserProfileNotLoaded.getErrorMessage(),
+                        ResponseCode.extendUserProfileNotLoaded.getResponseCode());
+            }
+        }
+    }
+}

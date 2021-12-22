@@ -290,4 +290,10 @@ public class UserRoleServiceImpl implements UserRoleService {
     }
     return userRolesList;
   }
+
+  public List<Map<String, Object>> readUserRole(String userId, RequestContext context) {
+    List<Map<String, Object>> userRoleList = new ArrayList<>();
+    userRoleList = userRoleDao.getUserRoles(userId, null, context);
+    return userRoleList;
+  }
 }

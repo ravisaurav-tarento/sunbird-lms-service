@@ -35,6 +35,7 @@ import org.sunbird.service.user.UserRoleService;
 import org.sunbird.service.user.UserService;
 import org.sunbird.service.user.UserTncService;
 import org.sunbird.util.*;
+import org.sunbird.util.user.ProfileUtil;
 import org.sunbird.util.user.UserActorOperations;
 import org.sunbird.util.user.UserUtil;
 import scala.concurrent.Await;
@@ -87,6 +88,7 @@ public class UserServiceImpl implements UserService {
     if (MapUtils.isEmpty(user)) {
       ProjectCommonException.throwResourceNotFoundException(ResponseCode.userNotFound, "");
     }
+    user.put(JsonKey.PROFILE_DETAILS, ProfileUtil.toMap(user.get(JsonKey.PROFILE_DETAILS).toString()));
     user.putAll(Util.getUserDefaultValue());
     return user;
   }

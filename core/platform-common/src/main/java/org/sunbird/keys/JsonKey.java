@@ -603,6 +603,19 @@ public final class JsonKey {
   public static final String OTP_CONTACT_UPDATE_TEMPLATE_SMS = "otpContactUpdateTemplateSms";
   public static final String CONTACT_DETAILS_UPDATE_VERIFICATION_SUBJECT =
       "OTP to edit Diksha Profile";
+  public static final String PROFILE_DETAILS = "profileDetails";
+  public static final String EXTENDED_PROFILE_SCHEMA_CONFIG = "extendedProfileSchemaConfig";
+  public static final String MANDATORY_FIELDS_EXISTS = "mandatoryFieldsExists";
+  public static final String OSID = "osid";
+  public static final String MULTI_QUERY_SEARCH_FIELDS = "multiQuerySearchFields";
+  public static final String NOTIFY_USER_MIGRATION = "notifyMigration";
+  public static final String DISABLE_MULTIPLE_ORG_ROLE = "sunbird_disable_multiple_org_role";
+  public static final String ORG_SUB_TYPE = "organisationSubType";
+  public static final String ORG_TYPE_CONFIG = "orgTypeConfig";
+  public static final String ORG_TYPE_SCHOOL = "school";
+  public static final String ORG_TYPE_BOARD = "board";
+  public static final String FORCE_MIGRATION = "forceMigration";
+  public static final String SOFT_DELETE_PREVIOUS_ORG = "softDeleteOldOrg";
 
   private JsonKey() {}
 }

@@ -20,6 +20,7 @@ import org.sunbird.model.user.User;
 import org.sunbird.request.RequestContext;
 import org.sunbird.response.Response;
 import org.sunbird.util.ProjectUtil;
+import org.sunbird.util.user.ProfileUtil;
 import scala.concurrent.Future;
 
 /**
@@ -64,6 +65,7 @@ public class UserDaoImpl implements UserDao {
   public User getUserById(String userId, RequestContext context) {
     Map<String, Object> user = getUserDetailsById(userId, context);
     if (MapUtils.isNotEmpty(user)) {
+      user.put(JsonKey.PROFILE_DETAILS, ProfileUtil.toMap(user.get(JsonKey.PROFILE_DETAILS).toString()));
       return mapper.convertValue(user, User.class);
     }
     return null;

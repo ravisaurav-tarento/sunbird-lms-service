@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.jclouds.json.Json;
 import org.sunbird.actor.organisation.validator.OrgTypeValidator;
 import org.sunbird.exception.ProjectCommonException;
 import org.sunbird.exception.ResponseCode;
@@ -82,7 +83,9 @@ public class UserProfileReadService {
       result.putAll(Util.getUserDefaultValue());
     }
     //Added the profileDetails translation
-    result.put(JsonKey.PROFILE_DETAILS, ProfileUtil.toMap(result.get(JsonKey.PROFILE_DETAILS).toString()));
+    if (result.get(JsonKey.PROFILE_DETAILS) != null) {
+      result.put(JsonKey.PROFILE_DETAILS, ProfileUtil.toMap(result.get(JsonKey.PROFILE_DETAILS).toString()));
+    }
     OrgTypeValidator.getInstance().updateOrganisationTypeFlags(rootOrg);
     result.put(JsonKey.ROOT_ORG, rootOrg);
     Map<String, List<String>> userOrgRoles = null;
@@ -667,7 +670,7 @@ public class UserProfileReadService {
     List<String> roleList = new ArrayList<String>();
     for(Map<String, Object> org : organisations) {
       boolean isDeleted = (boolean) org.get(JsonKey.IS_DELETED);
-      if(!isDeleted) {
+      if (!isDeleted && org.get(JsonKey.ROLES) != null) {
         roleList.addAll((List<String>)org.get(JsonKey.ROLES));
       }
     }

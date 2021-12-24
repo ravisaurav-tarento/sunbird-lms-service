@@ -88,7 +88,9 @@ public class UserServiceImpl implements UserService {
     if (MapUtils.isEmpty(user)) {
       ProjectCommonException.throwResourceNotFoundException(ResponseCode.userNotFound, "");
     }
-    user.put(JsonKey.PROFILE_DETAILS, ProfileUtil.toMap(user.get(JsonKey.PROFILE_DETAILS).toString()));
+    if (user.get(JsonKey.PROFILE_DETAILS) != null) {
+      user.put(JsonKey.PROFILE_DETAILS, ProfileUtil.toMap(user.get(JsonKey.PROFILE_DETAILS).toString()));
+    }
     user.putAll(Util.getUserDefaultValue());
     return user;
   }

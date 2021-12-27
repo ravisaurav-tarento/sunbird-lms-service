@@ -39,14 +39,18 @@ public class UserExtendedProfileSchemaValidator {
         logger.info(null, String.format("schemas size :- " + schemas.size()));
     }
 
-    public static boolean validate(String entityType, String payload) throws Exception {
+    public static boolean validate(String entityType, JSONObject payload) throws Exception {
         Schema schema = getEntitySchema(entityType);
-        JSONObject obj = new JSONObject(payload);
         try {
-            schema.validate(obj);
+            schema.validate(payload);
+            payload.put(JsonKey.MANDATORY_FIELDS_EXISTS, Boolean.TRUE);
         } catch (ValidationException e) {
-            e.printStackTrace();
-            throw new Exception(e.getMessage());
+            if (e.getAllMessages().toString().contains(PRIMARY_EMAIL_FIELD)) {
+                throw new Exception(e.getAllMessages().toString());
+            } else {
+                logger.error("Mandatory attributes are not present",e);
+                payload.put(JsonKey.MANDATORY_FIELDS_EXISTS, Boolean.FALSE);
+            }
         }
         return true;
     }

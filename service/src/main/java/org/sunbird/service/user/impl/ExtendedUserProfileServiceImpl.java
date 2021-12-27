@@ -13,7 +13,7 @@ import org.sunbird.util.user.UserExtendedProfileSchemaValidator;
 import java.util.Map;
 
 public class ExtendedUserProfileServiceImpl implements ExtendedUserProfileService {
-    private static final String SCHEMA = ProjectUtil.getConfigValue("profileDetails.json");
+    private static final String SCHEMA = "profileDetails.json";
     private static final ObjectMapper mapper = new ObjectMapper();
 
     @Override
@@ -22,7 +22,6 @@ public class ExtendedUserProfileServiceImpl implements ExtendedUserProfileServic
             try{
                 String userProfile = mapper.writeValueAsString(userRequest.getRequest().get(JsonKey.PROFILE_DETAILS));
                 JSONObject obj = new JSONObject(userProfile);
-                //TOOD - pass proper object
                 UserExtendedProfileSchemaValidator.validate(SCHEMA, obj);
                 ((Map)userRequest.getRequest().get(JsonKey.PROFILE_DETAILS)).put(JsonKey.MANDATORY_FIELDS_EXISTS, obj.get(JsonKey.MANDATORY_FIELDS_EXISTS));
             } catch (Exception e){

@@ -65,9 +65,6 @@ public class UserDaoImpl implements UserDao {
   public User getUserById(String userId, RequestContext context) {
     Map<String, Object> user = getUserDetailsById(userId, context);
     if (MapUtils.isNotEmpty(user)) {
-      if (user.get(JsonKey.PROFILE_DETAILS) != null) {
-        user.put(JsonKey.PROFILE_DETAILS, ProfileUtil.toMap(user.get(JsonKey.PROFILE_DETAILS).toString()));
-      }
       return mapper.convertValue(user, User.class);
     }
     return null;

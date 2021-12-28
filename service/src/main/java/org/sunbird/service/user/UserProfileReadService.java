@@ -82,10 +82,6 @@ public class UserProfileReadService {
     }else{
       result.putAll(Util.getUserDefaultValue());
     }
-    //Added the profileDetails translation
-    if (result.get(JsonKey.PROFILE_DETAILS) != null) {
-      result.put(JsonKey.PROFILE_DETAILS, ProfileUtil.toMap(result.get(JsonKey.PROFILE_DETAILS).toString()));
-    }
     OrgTypeValidator.getInstance().updateOrganisationTypeFlags(rootOrg);
     result.put(JsonKey.ROOT_ORG, rootOrg);
     Map<String, List<String>> userOrgRoles = null;

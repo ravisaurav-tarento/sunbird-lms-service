@@ -89,6 +89,7 @@ public class UserServiceImpl implements UserService {
       ProjectCommonException.throwResourceNotFoundException(ResponseCode.userNotFound, "");
     }
     if (user.get(JsonKey.PROFILE_DETAILS) != null) {
+      logger.info("getUserDetailsById :: read Profile details String is :: " + user.get(JsonKey.PROFILE_DETAILS).toString());
       user.put(JsonKey.PROFILE_DETAILS, ProfileUtil.toMap(user.get(JsonKey.PROFILE_DETAILS).toString()));
     }
     user.putAll(Util.getUserDefaultValue());

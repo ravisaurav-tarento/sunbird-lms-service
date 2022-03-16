@@ -24,11 +24,11 @@ public class BackGroundNotificationActor extends BaseActor {
 
   private void callNotificationService(Request reqObj) {
     Map<String, Object> request = reqObj.getRequest();
-    logger.debug(
+    logger.info(
         reqObj.getRequestContext(),
         "BackGroundNotificationActor:callNotificationService :: Method called.");
     try {
-      logger.debug(
+      logger.info(
           reqObj.getRequestContext(),
           "BackGroundNotificationActor:callNotificationService :: calling notification service URL :"
               + NOTIFICATION_SERVICE_URL);
@@ -43,7 +43,7 @@ public class BackGroundNotificationActor extends BaseActor {
       ProjectUtil.setTraceIdInHeader(headers, reqObj.getRequestContext());
       String response =
           HttpClientUtil.post(NOTIFICATION_SERVICE_URL, json, headers, reqObj.getRequestContext());
-      logger.debug(
+      logger.info(
           reqObj.getRequestContext(),
           "BackGroundNotificationActor:callNotificationService :: Response =" + response);
     } catch (Exception ex) {

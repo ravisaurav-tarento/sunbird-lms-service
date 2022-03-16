@@ -31,6 +31,7 @@ public class SendNotificationActor extends BaseActor {
   }
 
   private void sendNotification(Request request) {
+    logger.info("SendNotificationActor:sendNotification : called ");
     Map<String, Object> requestMap =
         (Map<String, Object>) request.getRequest().get(JsonKey.EMAIL_REQUEST);
     List<String> userIds = (List<String>) requestMap.remove(JsonKey.RECIPIENT_USERIDS);
@@ -54,14 +55,17 @@ public class SendNotificationActor extends BaseActor {
       phoneOrEmailList =
           notificationService.getEmailOrPhoneListByUserIds(
               userIds, JsonKey.EMAIL, request.getRequestContext());
+      logger.info("SendNotificationActor:sendNotification : called phoneOrEmailList = "+phoneOrEmailList);
       String template =
           notificationService.getEmailTemplateFile(
               (String) requestMap.get(JsonKey.EMAIL_TEMPLATE_TYPE), request.getRequestContext());
+      logger.info("SendNotificationActor:sendNotification : called template = "+template);
       notificationReq =
           notificationService.getV2NotificationRequest(
               phoneOrEmailList, requestMap, JsonKey.EMAIL, template);
+      logger.info("SendNotificationActor:sendNotification : called notificationReq = "+notificationReq);
     }
-    logger.debug(
+    logger.info(
         request.getRequestContext(),
         "SendNotificationActor:sendNotification : called for userIds =" + userIds);
     process(notificationReq, request.getRequestId(), request.getRequestContext());

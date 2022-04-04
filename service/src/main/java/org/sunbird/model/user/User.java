@@ -8,7 +8,10 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.collections.MapUtils;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.sunbird.logging.LoggerUtil;
+import org.sunbird.util.user.ProfileUtil;
 
 /**
  * @desc POJO class for User
@@ -19,6 +22,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 public class User implements Serializable {
 
   private static final long serialVersionUID = 7529802960267784945L;
+  private LoggerUtil logger = new LoggerUtil(User.class);
 
   private String id;
   private String countryCode;
@@ -63,6 +67,7 @@ public class User implements Serializable {
   private String profileUserType;
   private String profileLocation;
   private String profileUserTypes;
+  private String profileDetails;
 
   public Map<String, String> getAllTncAccepted() {
     return allTncAccepted;
@@ -434,6 +439,25 @@ public class User implements Serializable {
       }
     } else {
       this.profileLocation = (String) profileLocation;
+    }
+  }
+
+  public String getProfileDetails() {
+    return profileDetails;
+  }
+
+  public void setProfileDetails(String profileDetails) {
+    this.profileDetails = profileDetails;
+  }
+
+  public void setProfileDetails(Map profileDetails) {
+    if (MapUtils.isNotEmpty(profileDetails)) {
+      try {
+        ProfileUtil.appendIdToReferenceObjects(profileDetails);
+        this.profileDetails = new ObjectMapper().writeValueAsString(profileDetails);
+      } catch (Exception e) {
+        logger.error("User Exception ", e);
+      }
     }
   }
 }

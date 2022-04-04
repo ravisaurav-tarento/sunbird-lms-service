@@ -77,7 +77,7 @@ public class TenantMigrationActor extends BaseActor {
     String operation = request.getOperation();
     switch (operation) {
       case "userTenantMigrate":
-        migrateUser(request, true);
+        migrateUser(request);
         break;
       case "userSelfDeclaredTenantMigrate":
         migrateSelfDeclaredUser(request);
@@ -103,7 +103,7 @@ public class TenantMigrationActor extends BaseActor {
     } else {
       // First migrating user, if migration success, then status gets updated as VALIDATED.
       try {
-        migrateUser(request, true);
+        migrateUser(request);
       } catch (ProjectCommonException pce) {
         logger.error(
             request.getRequestContext(), "TenantMigrationActor:migrateUser user failed.", pce);
@@ -130,7 +130,7 @@ public class TenantMigrationActor extends BaseActor {
   }
 
   @SuppressWarnings("unchecked")
-  private void migrateUser(Request request, boolean notify) {
+  private void migrateUser(Request request) {
     logger.info(request.getRequestContext(), "TenantMigrationActor:migrateUser called.");
     Map<String, Object> reqMap = new HashMap<>(request.getRequest());
     Map<String, Object> targetObject = null;
@@ -138,7 +138,10 @@ public class TenantMigrationActor extends BaseActor {
     Map<String, Object> userDetails =
         userService.getUserDetailsForES(
             (String) request.getRequest().get(JsonKey.USER_ID), request.getRequestContext());
-    tenantServiceImpl.validateUserCustodianOrgId((String) userDetails.get(JsonKey.ROOT_ORG_ID));
+    if (null == request.getRequest().get(JsonKey.FORCE_MIGRATION)
+            || !(boolean) request.getRequest().get(JsonKey.FORCE_MIGRATION)) {
+      tenantServiceImpl.validateUserCustodianOrgId((String) userDetails.get(JsonKey.ROOT_ORG_ID));
+    }
     tenantServiceImpl.validateChannelAndGetRootOrgId(request);
     Map<String, String> rollup = new HashMap<>();
     rollup.put("l1", (String) request.getRequest().get(JsonKey.ROOT_ORG_ID));
@@ -209,6 +212,10 @@ public class TenantMigrationActor extends BaseActor {
     // save user data to ES
     saveUserDetailsToEs(
         (String) request.getRequest().get(JsonKey.USER_ID), request.getRequestContext());
+    boolean notify = true;
+    if (null != request.getRequest().get(JsonKey.NOTIFY_USER_MIGRATION)) {
+      notify = (boolean) request.getRequest().get(JsonKey.NOTIFY_USER_MIGRATION);
+    }
     if (notify) {
       notify(userDetails, request.getRequestContext());
     }

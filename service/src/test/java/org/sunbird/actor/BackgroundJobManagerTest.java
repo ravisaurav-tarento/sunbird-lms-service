@@ -1,8 +1,7 @@
 package org.sunbird.actor;
 
 import static org.junit.Assert.assertTrue;
-import static org.powermock.api.mockito.PowerMockito.mock;
-import static org.powermock.api.mockito.PowerMockito.when;
+import static org.powermock.api.mockito.PowerMockito.*;
 
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
@@ -22,6 +21,7 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.sunbird.actor.organisation.validator.OrgTypeValidator;
 import org.sunbird.cassandraimpl.CassandraOperationImpl;
 import org.sunbird.common.ElasticSearchHelper;
 import org.sunbird.common.ElasticSearchRestHighImpl;
@@ -43,7 +43,8 @@ import scala.concurrent.Promise;
   ElasticSearchRestHighImpl.class,
   ElasticSearchHelper.class,
   EsClientFactory.class,
-  ProjectUtil.class
+  ProjectUtil.class,
+  OrgTypeValidator.class
 })
 @PowerMockIgnore({
   "javax.management.*",
@@ -78,6 +79,10 @@ public class BackgroundJobManagerTest {
 
     when(esService.bulkInsert(Mockito.anyString(), Mockito.anyList(), Mockito.any()))
             .thenReturn(promise.future());
+    OrgTypeValidator orgTypeValidator = mock(OrgTypeValidator.class);
+    mockStatic(OrgTypeValidator.class);
+    when(OrgTypeValidator.getInstance()).thenReturn(orgTypeValidator);
+    when(orgTypeValidator.getValueByType(JsonKey.ORG_TYPE_SCHOOL)).thenReturn(2);
   }
 
   /*@Test
@@ -91,6 +96,7 @@ public class BackgroundJobManagerTest {
     reqObj.setOperation(ActorOperations.INSERT_ORG_INFO_ELASTIC.getValue());
     Map<String, Object> reqMap = new HashMap<>();
     reqMap.put(JsonKey.ID, "1321546897");
+    reqMap.put(JsonKey.ORGANISATION_TYPE, 2);
     reqObj.getRequest().put(JsonKey.ORGANISATION, reqMap);
     subject.tell(reqObj, probe.getRef());
     probe.expectNoMessage();

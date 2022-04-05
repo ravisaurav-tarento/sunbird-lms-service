@@ -174,7 +174,10 @@ public enum ResponseCode {
   TOO_MANY_REQUESTS(429),
   SERVICE_UNAVAILABLE(503),
   PARTIAL_SUCCESS_RESPONSE(206),
-  IM_A_TEAPOT(418);
+  IM_A_TEAPOT(418),
+  extendUserProfileNotLoaded(ResponseMessage.Key.EXTENDED_USER_PROFILE_NOT_LOADED,
+          ResponseMessage.Message.EXTENDED_USER_PROFILE_NOT_LOADED, 500),
+  roleProcessingInvalidOrgError(ResponseMessage.Key.ROLE_PROCESSING_INVALID_ORG, ResponseMessage.Message.ROLE_PROCESSING_INVALID_ORG);
   private int responseCode;
   /** error code contains String value */
   private String errorCode;
@@ -188,6 +191,12 @@ public enum ResponseCode {
   ResponseCode(String errorCode, String errorMessage) {
     this.errorCode = errorCode;
     this.errorMessage = errorMessage;
+  }
+
+  ResponseCode(String errorCode, String errorMessage, int responseCode) {
+    this.errorCode = errorCode;
+    this.errorMessage = errorMessage;
+    this.responseCode = responseCode;
   }
 
   /** @return */

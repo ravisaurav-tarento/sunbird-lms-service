@@ -147,7 +147,7 @@ public enum ActorOperations {
   UPSERT_LOCATION_TO_ES("upsertLocationDataToES", "LBKGUPSRT"),
   DELETE_LOCATION_FROM_ES("deleteLocationDataFromES", "LBKGDEL"),
   USER_CURRENT_LOGIN("userCurrentLogin", "USRLOG"),
-  USER_AUTO_SEARCH("userAutoSearch");
+  USER_AUTO_SEARCH("userAutoSearch", "USRAUTOSER");
   private String value;
 
   private String operationCode;

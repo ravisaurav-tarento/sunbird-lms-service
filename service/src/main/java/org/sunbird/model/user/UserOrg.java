@@ -18,6 +18,7 @@ public class UserOrg implements Serializable {
   private String approvedBy;
   private String hashTagId;
   private boolean isApproved;
+  @JsonProperty(value="isDeleted")
   private boolean isDeleted;
   private boolean isRejected;
   private String organisationId;

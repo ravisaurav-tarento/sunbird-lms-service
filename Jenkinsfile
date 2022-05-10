@@ -26,12 +26,12 @@ node('build-slave') {
                     env.NODE_ENV = "build"
                     print "Environment will be : ${env.NODE_ENV}"
                     sh 'git log -1'
-                    sh 'mvn11 clean install -U -DskipTests=true '
+                    sh 'mvn clean install -U -DskipTests=true '
                 }
 
-                stage('Unit Tests') {
-                    sh "mvn11 clean install '-Dtest=!%regex[io.opensaber.registry.client.*]' -DfailIfNoTests=false"
-                }
+                //stage('Unit Tests') {
+                //    sh "mvn clean install '-Dtest=!%regex[io.opensaber.registry.client.*]' -DfailIfNoTests=false"
+                //}
                 stage('Package') {
                     dir('controller') {
                         sh 'mvn play2:dist'

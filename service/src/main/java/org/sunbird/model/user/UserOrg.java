@@ -18,7 +18,6 @@ public class UserOrg implements Serializable {
   private String approvedBy;
   private String hashTagId;
   private boolean isApproved;
-  @JsonProperty(value="isDeleted")
   private boolean isDeleted;
   private boolean isRejected;
   private String organisationId;
@@ -106,7 +105,7 @@ public class UserOrg implements Serializable {
     return isDeleted;
   }
 
-  public void setDeleted(boolean isDeleted) {
+  public void setIsDeleted(boolean isDeleted) {
     this.isDeleted = isDeleted;
   }
 

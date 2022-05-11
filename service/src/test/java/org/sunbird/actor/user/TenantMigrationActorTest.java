@@ -43,6 +43,7 @@ import org.sunbird.response.Response;
 import org.sunbird.util.DataCacheHandler;
 import org.sunbird.util.ProjectUtil;
 import scala.concurrent.Promise;
+import scala.concurrent.duration.Duration;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({
@@ -213,7 +214,8 @@ public class TenantMigrationActorTest {
     ActorRef subject = system.actorOf(props);
     subject.tell(reqObj, probe.getRef());
     if (errorCode == null) {
-      Response res = probe.expectMsgClass(duration("100 second"), Response.class);
+      //Response res = probe.expectMsgClass(duration("100 second"), Response.class);
+      Response res = probe.expectMsgAnyClassOf(Response.class);
       return null != res && res.getResponseCode() == ResponseCode.OK;
     } else {
       ProjectCommonException res =

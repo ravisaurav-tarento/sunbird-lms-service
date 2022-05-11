@@ -216,10 +216,12 @@ public class UserRoleActorTest {
       subject.tell(getRequestObj(isOrgIdReq), probe.getRef());
     }
     if (errorResponse == null) {
-      Response res = probe.expectMsgClass(duration("100 second"), Response.class);
+      //Response res = probe.expectMsgClass(duration("100 second"), Response.class);
+      Response res = probe.expectMsgAnyClassOf(Response.class);
       return null != res && res.getResponseCode() == ResponseCode.OK;
     } else {
-      Response res1 = probe.expectMsgClass(duration("100 second"), Response.class);
+      //Response res1 = probe.expectMsgClass(duration("100 second"), Response.class);
+      Response res1 = probe.expectMsgAnyClassOf(Response.class);
       if (res1.getResult().size() <= 1) {
         return false;
       }

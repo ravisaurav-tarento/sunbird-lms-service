@@ -54,7 +54,7 @@ public class ResetPasswordService {
    */
   public String getSunbirdLoginUrl() {
     StringBuilder webUrl = new StringBuilder();
-    String slug = "/resources";
+    String slug = "";
     webUrl.append(ProjectUtil.getConfigValue(JsonKey.SUNBIRD_WEB_URL));
     webUrl.append(slug);
     return webUrl.toString();

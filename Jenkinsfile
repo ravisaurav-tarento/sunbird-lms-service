@@ -30,8 +30,7 @@ node('build-slave') {
                 }
 
                stage('Unit Tests') {
-                    //sh "mvn clean install '-Dtest=!%regex[io.opensaber.registry.client.*]' -DfailIfNoTests=false"
-                   mvn clean install -Dskiptests
+                  sh " mvn clean install -Dskiptests"
                 }
                 stage('Package') {
                     dir('controller') {

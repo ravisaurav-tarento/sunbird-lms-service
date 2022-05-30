@@ -16,7 +16,7 @@ public interface ResponseMessage {
     String INVALID_REQUESTED_DATA = "Requested data for this operation is not valid.";
     String API_KEY_MISSING_ERROR = "APi key is mandatory.";
     String INTERNAL_ERROR = "Process failed,please try again later.";
-    String SUCCESS_MESSAGE = "Success";
+    String SUCCESS_MESSAGE = "SUCCESS";
     String EMAIL_FORMAT = "Email is invalid.";
     String FIRST_NAME_MISSING = "First name is mandatory.";
     String CHANNEL_SHOULD_BE_UNIQUE =

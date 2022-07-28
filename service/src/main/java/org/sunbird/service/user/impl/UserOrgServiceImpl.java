@@ -31,7 +31,7 @@ public class UserOrgServiceImpl implements UserOrgService {
   public void registerUserToOrg(Map<String, Object> userMap, RequestContext context) {
     Map<String, Object> reqMap = new WeakHashMap<>();
     reqMap.put(JsonKey.ID, ProjectUtil.getUniqueIdFromTimestamp(1));
-    reqMap.put(JsonKey.USER_ID, userMap.get(JsonKey.USER_ID));
+    reqMap.put(JsonKey.USER_ID, userMap.get(JsonKey.ID));
     reqMap.put(JsonKey.ORGANISATION_ID, userMap.get(JsonKey.ORGANISATION_ID));
     reqMap.put(JsonKey.ORG_JOIN_DATE, ProjectUtil.getFormattedDate());
     reqMap.put(JsonKey.IS_DELETED, false);

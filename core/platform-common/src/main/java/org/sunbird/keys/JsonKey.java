@@ -26,6 +26,7 @@ public final class JsonKey {
   public static final String ADDITIONAL_INFO = "ADDITIONAL_INFO";
   public static final String ADDRESS = "address";
   public static final String ALLOWED_LOGIN = "allowedLogin";
+  public static final String DATE_TOOL_SUPPORT_FOR_VELOCITY_TEMPLATE = "date";
   public static final String API_ACCESS = "api_access";
   public static final String API_CALL = "API_CALL";
   public static final String ASSOCIATION_TYPE = "associationType";

@@ -20,6 +20,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.velocity.VelocityContext;
+import org.apache.velocity.tools.generic.DateTool;
 import org.sunbird.exception.ProjectCommonException;
 import org.sunbird.exception.ResponseCode;
 import org.sunbird.keys.JsonKey;
@@ -352,6 +353,7 @@ public class ProjectUtil {
       context.put(JsonKey.COURSE_BATCH_URL, map.remove(JsonKey.COURSE_BATCH_URL));
     }
     context.put(JsonKey.ALLOWED_LOGIN, propertiesCache.getProperty(JsonKey.SUNBIRD_ALLOWED_LOGIN));
+    context.put(JsonKey.DATE_TOOL_SUPPORT_FOR_VELOCITY_TEMPLATE, new DateTool());
     map = addCertStaticResource(map);
     for (Map.Entry<String, Object> entry : map.entrySet()) {
       context.put(entry.getKey(), entry.getValue());

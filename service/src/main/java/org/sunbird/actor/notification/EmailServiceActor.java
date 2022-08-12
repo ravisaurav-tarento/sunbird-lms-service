@@ -104,6 +104,8 @@ public class EmailServiceActor extends BaseActor {
       VelocityContext context = ProjectUtil.getContext(request);
       StringWriter writer = new StringWriter();
       Velocity.evaluate(context, writer, "SimpleVelocity", template);
+      logger.info("The writer constituents are :" +writer);
+      logger.info("The template constituents are :" + context);
       long interval = 60000L;
       if (StringUtils.isNotBlank(resetInterval)) {
         interval = Long.parseLong(resetInterval);

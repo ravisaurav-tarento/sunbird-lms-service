@@ -15,7 +15,7 @@ public class BackGroundNotificationActor extends BaseActor {
   private final String notification_service_base_url =
       System.getenv("notification_service_base_url");
   private final String NOTIFICATION_SERVICE_URL =
-      notification_service_base_url + "/v1/notification/send";
+      notification_service_base_url + System.getenv("notification_service_notify_endpoint");
 
   @Override
   public void onReceive(Request request) throws Throwable {

@@ -83,7 +83,7 @@ public class HttpClientUtil {
       response = httpclient.execute(httpGet);
       return getResponse(response, context, "GET");
     } catch (Exception ex) {
-      logger.error(context, "Exception occurred while calling get method", ex);
+      logger.error(context, "Exception occurred while calling get method. Exception: " + ex.getMessage(), ex);
       return "";
     } finally {
       closeResponse(response, context, "GET");

@@ -69,7 +69,7 @@ public class NICGatewaySmsProvider implements ISmsProvider {
       URI.append("&signature=" + senderId);
       URI.append("&mnumber=" + recipient);
       URI.append("&message=" + URLEncoder.encode(messageBody, Consts.UTF_8));
-      URI.append("&msgType=" + "UC");
+      //URI.append("&msgType=" + "UC");
       URI.append("&dlt_entity_id=" + dltEntityId);
       URI.append("&dlt_template_id=" + dltTemplateId);
 

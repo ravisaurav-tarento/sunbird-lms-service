@@ -73,7 +73,6 @@ public class NICGatewaySmsProvider implements ISmsProvider {
       URI.append("&dlt_entity_id=" + dltEntityId);
       URI.append("&dlt_template_id=" + dltTemplateId);
 
-      logger.info("NICGatewaySmsProvider: constructed GET request: " + URI.toString());
       Map<String, String> headers = new HashMap<>();
       headers.put("Content-Type", "application/json");
       headers.put("Accept", "application/json");

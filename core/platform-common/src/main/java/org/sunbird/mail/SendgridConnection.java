@@ -15,7 +15,10 @@ public class SendgridConnection {
 
   private Properties props = null;
   private String host;
+
   private String port;
+
+  private String isTlsEnabled;
   private String userName;
   private String password;
   private String fromEmail;
@@ -53,6 +56,11 @@ public class SendgridConnection {
       props.put("mail.smtp.auth", "true");
       props.put("mail.smtp.port", port);
 
+      if ("true".equalsIgnoreCase(isTlsEnabled))
+      {
+        props.put("mail.smtp.starttls.enable", "true");
+        props.put("mail.smtp.ssl.protocols", "TLSv1.2");
+      }
       session = Session.getInstance(props, new GMailAuthenticator(userName, password));
       transport = session.getTransport("smtp");
       transport.connect(host, userName, password);
@@ -82,5 +90,6 @@ public class SendgridConnection {
     userName = PropertiesCache.getInstance().getProperty(JsonKey.EMAIL_SERVER_USERNAME);
     password = PropertiesCache.getInstance().getProperty(JsonKey.EMAIL_SERVER_PASSWORD);
     fromEmail = PropertiesCache.getInstance().getProperty(JsonKey.EMAIL_SERVER_FROM);
+    isTlsEnabled = PropertiesCache.getInstance().getProperty(JsonKey.IS_TLS_ENABLE);
   }
 }

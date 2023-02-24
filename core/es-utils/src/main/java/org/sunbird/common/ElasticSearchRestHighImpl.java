@@ -26,10 +26,8 @@ import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.action.update.UpdateResponse;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.query.SimpleQueryStringBuilder;
-import org.elasticsearch.index.query.TermQueryBuilder;
+import org.elasticsearch.common.unit.Fuzziness;
+import org.elasticsearch.index.query.*;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogramInterval;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
@@ -372,7 +370,7 @@ public class ElasticSearchRestHighImpl implements ElasticSearchService {
 
     // apply simple query string
     if (!StringUtils.isBlank(searchDTO.getQuery())) {
-      SimpleQueryStringBuilder sqsb = QueryBuilders.simpleQueryStringQuery(searchDTO.getQuery());
+      QueryStringQueryBuilder sqsb = QueryBuilders.queryStringQuery(searchDTO.getQuery()).fuzziness(Fuzziness.AUTO).fuzzyTranspositions(true);
       query.must(sqsb);
       if (CollectionUtils.isNotEmpty(searchDTO.getQueryFields())) {
         Map<String, Float> searchFields =
@@ -415,6 +413,18 @@ public class ElasticSearchRestHighImpl implements ElasticSearchService {
             ? searchDTO.getExcludedFields().stream().toArray(String[]::new)
             : null);
 
+    logger.info("...............");
+    logger.info("...............");
+    logger.info("...............");
+    logger.info("...............");
+    logger.info("..............."); logger.info("...............");
+    logger.info("...............");
+    logger.info("...............");
+    logger.info("...............");
+    logger.info(searchDTO.getQuery());
+
+
+
     // setting the offset
     if (searchDTO.getOffset() != null) {
       searchSourceBuilder.from(searchDTO.getOffset());
@@ -451,7 +461,7 @@ public class ElasticSearchRestHighImpl implements ElasticSearchService {
         "ElasticSearchRestHighImpl:search: calling search for index "
             + index
             + ", with query = "
-            + searchSourceBuilder.toString());
+            + searchSourceBuilder);
 
     searchRequest.source(searchSourceBuilder);
     Promise<Map<String, Object>> promise = Futures.promise();

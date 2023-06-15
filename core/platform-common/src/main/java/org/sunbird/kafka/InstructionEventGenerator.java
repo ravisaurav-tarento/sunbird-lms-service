@@ -85,7 +85,7 @@ public class InstructionEventGenerator {
 
     TelemetryBJREvent te = new TelemetryBJREvent();
     long unixTime = System.currentTimeMillis();
-    String mid = "LP." + System.currentTimeMillis() + "." + UUID.randomUUID();
+    String mid = beJobRequesteventId + "." + System.currentTimeMillis() + "." + UUID.randomUUID();
     edata.put("iteration", iteration);
 
     te.setEid(beJobRequesteventId);

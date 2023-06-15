@@ -16,7 +16,6 @@ public class Context {
   private String env;
   private String did;
   private List<Map<String, Object>> cdata = new ArrayList<>();
-  private Map<String, String> rollup = new HashMap<>();
 
   public Context() {}
 
@@ -25,14 +24,6 @@ public class Context {
     this.channel = channel;
     this.env = env;
     this.pdata = pdata;
-  }
-
-  public Map<String, String> getRollup() {
-    return rollup;
-  }
-
-  public void setRollup(Map<String, String> rollup) {
-    this.rollup = rollup;
   }
 
   public List<Map<String, Object>> getCdata() {

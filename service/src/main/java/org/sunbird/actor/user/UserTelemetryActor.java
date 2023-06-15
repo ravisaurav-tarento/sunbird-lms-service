@@ -27,9 +27,9 @@ public class UserTelemetryActor extends BaseActor {
     Map<String, Object> userMap = (Map<String, Object>) request.getRequest().get("userMap");
     String userId = (String) request.getRequest().get("userId");
     List<Map<String, Object>> correlatedObject = new ArrayList<>();
-    Map<String, String> rollUp = new HashMap<>();
-    rollUp.put("l1", (String) userMap.get(JsonKey.ROOT_ORG_ID));
-    request.getContext().put(JsonKey.ROLLUP, rollUp);
+//    Map<String, String> rollUp = new HashMap<>();
+//    rollUp.put("l1", (String) userMap.get(JsonKey.ROOT_ORG_ID));
+//    request.getContext().put(JsonKey.ROLLUP, rollUp);
     targetObject =
         TelemetryUtil.generateTargetObject(
             (String) userMap.get(JsonKey.ID),

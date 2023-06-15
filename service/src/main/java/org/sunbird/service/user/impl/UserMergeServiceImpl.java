@@ -24,9 +24,9 @@ public class UserMergeServiceImpl implements UserMergeService {
       Map telemetryMap, User merger, Map<String, Object> context) {
     Map<String, Object> targetObject = null;
     List<Map<String, Object>> correlatedObject = new ArrayList<>();
-    Map<String, String> rollUp = new HashMap<>();
-    rollUp.put("l1", merger.getRootOrgId());
-    context.put(JsonKey.ROLLUP, rollUp);
+//    Map<String, String> rollUp = new HashMap<>();
+//    rollUp.put("l1", merger.getRootOrgId());
+//    context.put(JsonKey.ROLLUP, rollUp);
     targetObject =
         TelemetryUtil.generateTargetObject(
             (String) telemetryMap.get(JsonKey.TO_ACCOUNT_ID),

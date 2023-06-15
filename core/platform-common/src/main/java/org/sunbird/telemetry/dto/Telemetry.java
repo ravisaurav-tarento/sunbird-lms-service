@@ -13,7 +13,7 @@ public class Telemetry {
   private String eid;
   private long ets = System.currentTimeMillis();
   private String ver = "3.0";
-  private String mid = System.currentTimeMillis() + "." + UUID.randomUUID();
+  private String mid = getEid() + "." + System.currentTimeMillis() + "." + UUID.randomUUID();
   private Actor actor;
   private Context context;
   private Target object;

@@ -80,9 +80,6 @@ public class TelemetryGenerator {
         new Target(
             (String) targetObject.get(JsonKey.ID),
             StringUtils.capitalize((String) targetObject.get(JsonKey.TYPE)));
-    if (targetObject.get(JsonKey.ROLLUP) != null) {
-      target.setRollup((Map<String, String>) targetObject.get(JsonKey.ROLLUP));
-    }
     return target;
   }
 
@@ -146,10 +143,6 @@ public class TelemetryGenerator {
     Producer producer = getProducer(context);
     Context eventContext = new Context(channel, StringUtils.capitalize(env), producer);
     eventContext.setDid(did);
-    if (context.get(JsonKey.ROLLUP) != null
-        && !((Map<String, String>) context.get(JsonKey.ROLLUP)).isEmpty()) {
-      eventContext.setRollup((Map<String, String>) context.get(JsonKey.ROLLUP));
-    }
     return eventContext;
   }
 

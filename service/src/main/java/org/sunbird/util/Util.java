@@ -119,9 +119,8 @@ public final class Util {
             String rootOrgId = (String) result.get(JsonKey.ROOT_ORG_ID);
             if (StringUtils.isNotBlank(rootOrgId)) {
               Map<String, String> rollup = new HashMap<>();
-
               rollup.put("l1", rootOrgId);
-              requestContext.put(JsonKey.ROLLUP, rollup);
+              //requestContext.put(JsonKey.ROLLUP, rollup);
             }
           }
         }

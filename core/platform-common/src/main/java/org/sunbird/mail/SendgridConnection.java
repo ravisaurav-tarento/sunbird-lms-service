@@ -32,6 +32,7 @@ public class SendgridConnection {
       userName = System.getenv(JsonKey.EMAIL_SERVER_USERNAME);
       password = System.getenv(JsonKey.EMAIL_SERVER_PASSWORD);
       fromEmail = System.getenv(JsonKey.EMAIL_SERVER_FROM);
+      isTlsEnabled = PropertiesCache.getInstance().getProperty(JsonKey.IS_TLS_ENABLE);
 
       if (StringUtils.isBlank(host)
           || StringUtils.isBlank(port)

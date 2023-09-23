@@ -1,6 +1,9 @@
 package org.sunbird.actor.otp;
 
 import akka.actor.ActorRef;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
 import javax.inject.Inject;
@@ -65,7 +68,9 @@ public class SendOTPActor extends BaseActor {
     Map<String, Object> emailTemplateMap = new HashMap<>();
     emailTemplateMap.put(JsonKey.EMAIL, key);
     emailTemplateMap.put(JsonKey.OTP, otp);
-    emailTemplateMap.put(JsonKey.OTP_EXPIRATION_IN_MINUTES, OTPUtil.getOTPExpirationInMinutes());
+    int otpExpiryInMinutes = OTPUtil.getOTPExpirationInMinutes();
+    emailTemplateMap.put(JsonKey.OTP_EXPIRATION_IN_MINUTES, String.valueOf(otpExpiryInMinutes));
+    emailTemplateMap.put(JsonKey.OTP_EXPIRATION_TIME, getExpiryTime(otpExpiryInMinutes));
     emailTemplateMap.put(JsonKey.TEMPLATE_ID, templateId);
     Request emailRequest = OTPUtil.getRequestToSendOTPViaEmail(emailTemplateMap, context);
     emailRequest.setRequestContext(context);
@@ -85,11 +90,18 @@ public class SendOTPActor extends BaseActor {
     otpMap.put(JsonKey.PHONE, key);
     otpMap.put(JsonKey.OTP, otp);
     otpMap.put(JsonKey.TEMPLATE_ID, template);
-    otpMap.put(JsonKey.OTP_EXPIRATION_IN_MINUTES, OTPUtil.getOTPExpirationInMinutes());
+    int otpExpiryInMinutes = OTPUtil.getOTPExpirationInMinutes();
+    otpMap.put(JsonKey.OTP_EXPIRATION_IN_MINUTES, String.valueOf(otpExpiryInMinutes));
+    otpMap.put(JsonKey.OTP_EXPIRATION_TIME, getExpiryTime(otpExpiryInMinutes));
     logger.info(
         context,
         "SendOTPActor:sendOTPViaSMS : Calling OTPUtil.sendOTPViaSMS for Key = "
             + logMaskService.maskPhone(key));
     OTPUtil.sendOTPViaSMS(otpMap, context);
+  }
+
+  private String getExpiryTime(int otpExpiryInMinutes) {
+    LocalDateTime futureDateTime = LocalDateTime.now().plus(otpExpiryInMinutes, ChronoUnit.MINUTES);
+    return futureDateTime.format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"));
   }
 }

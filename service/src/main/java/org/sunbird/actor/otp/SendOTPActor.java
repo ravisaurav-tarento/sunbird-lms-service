@@ -1,7 +1,8 @@
 package org.sunbird.actor.otp;
 
 import akka.actor.ActorRef;
-import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
@@ -101,7 +102,7 @@ public class SendOTPActor extends BaseActor {
   }
 
   private String getExpiryTime(int otpExpiryInMinutes) {
-    LocalDateTime futureDateTime = LocalDateTime.now().plus(otpExpiryInMinutes, ChronoUnit.MINUTES);
+    ZonedDateTime futureDateTime = ZonedDateTime.now(ZoneId.of("Asia/Kolkata")).plus(otpExpiryInMinutes, ChronoUnit.MINUTES);
     return futureDateTime.format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"));
   }
 }

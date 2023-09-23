@@ -162,11 +162,11 @@ public final class OTPUtil {
     return request;
   }
 
-  public static String getOTPExpirationInMinutes() {
+  public static int getOTPExpirationInMinutes() {
     String expirationInSeconds = ProjectUtil.getConfigValue(JsonKey.SUNBIRD_OTP_EXPIRATION);
     int otpExpiration = Integer.parseInt(expirationInSeconds);
     int otpExpirationInMinutes = Math.floorDiv(otpExpiration, SECONDS_IN_MINUTES);
-    return String.valueOf(otpExpirationInMinutes);
+    return otpExpirationInMinutes;
   }
 
   public static String maskOTP(String otp) {

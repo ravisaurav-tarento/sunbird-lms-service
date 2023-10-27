@@ -97,7 +97,7 @@ public interface ResponseMessage {
     String RECOVERY_PARAM_MATCH_EXCEPTION = "{0} could not be same as {1}";
     String INVALID_PASSWORD =
         "Password must contain a minimum of 8 characters including numerals, lower and upper case alphabets and special characters";
-    String OTP_VERIFICATION_FAILED = "OTP verification failed. Remaining attempt count is {0}.";
+    String OTP_VERIFICATION_FAILED = "OTP verification failed. You have {0} attempt remaining.";
     String SERVICE_UNAVAILABLE = "SERVICE UNAVAILABLE";
     String MANAGED_BY_NOT_ALLOWED = "managedBy cannot be updated.";
     String MANAGED_USER_LIMIT_EXCEEDED = "Managed user creation limit exceeded";

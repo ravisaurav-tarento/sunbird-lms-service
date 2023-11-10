@@ -6,14 +6,23 @@ import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import com.google.gson.Gson;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.everit.json.schema.Schema;
+import org.everit.json.schema.loader.SchemaLoader;
 import org.jclouds.json.Json;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.json.JSONTokener;
 import org.sunbird.actor.organisation.validator.OrgTypeValidator;
+import org.sunbird.cassandra.CassandraOperation;
 import org.sunbird.exception.ProjectCommonException;
 import org.sunbird.exception.ResponseCode;
 import org.sunbird.exception.ResponseMessage;
+import org.sunbird.helper.ServiceFactory;
 import org.sunbird.keys.JsonKey;
 import org.sunbird.logging.LoggerUtil;
 import org.sunbird.operations.ActorOperations;
@@ -43,6 +52,8 @@ public class UserProfileReadService {
   private final UserExternalIdentityService userExternalIdentityService =
     UserExternalIdentityServiceImpl.getInstance();
   private final ObjectMapper mapper = new ObjectMapper();
+
+  private final CassandraOperation cassandraOperation = ServiceFactory.getInstance();
 
   public Response getUserProfileData(Request actorMessage) {
     String id = (String) actorMessage.getRequest().get(JsonKey.USER_ID);
@@ -139,10 +150,54 @@ public class UserProfileReadService {
     result.put(JsonKey.IDENTIFIER, userId);
 
     mapUserRoles(result);
-
+    String jsonData = new Gson().toJson(result);
+    String jsonSchema = getVerifiedProfileSchema(actorMessage.getRequestContext());
+    JSONObject rawSchema = new JSONObject(new JSONTokener(jsonSchema));
+    JSONObject data = new JSONObject(new JSONTokener(jsonData));
+    Schema schema = SchemaLoader.load(rawSchema);
+    schema.validate(data);
+    JSONArray requiredArray = rawSchema.optJSONArray("required");
+    Set<String> mandatoryFields = new HashSet<>();
+    if (requiredArray != null) {
+      for (int i = 0; i < requiredArray.length(); i++) {
+        mandatoryFields.add(requiredArray.getString(i));
+      }
+    }
+    Set<String> dataFields = data.keySet();
+    logger.info(actorMessage.getRequestContext(),"Mandatory Fields fetched from Json{}");
+    Set<String> missingMandatoryFields = new HashSet<>(mandatoryFields);
+    missingMandatoryFields.removeAll(dataFields);
+    Set<String> nonMandatoryFields = new HashSet<>(dataFields);
+    nonMandatoryFields.removeAll(mandatoryFields);
+    if (!missingMandatoryFields.isEmpty()) {
+      logger.info(actorMessage.getRequestContext(), "Missing mandatory fields in data: {}" + missingMandatoryFields);
+    }
+    if (!nonMandatoryFields.isEmpty()) {
+      logger.info(actorMessage.getRequestContext(), "Non-mandatory fields in data: {}" + nonMandatoryFields);
+    }
     Response response = new Response();
     response.put(JsonKey.RESPONSE, result);
     return response;
+  }
+
+  /**
+   *
+   * @param context
+   * @return
+   */
+  public String getVerifiedProfileSchema(RequestContext context) {
+    String strSchema = "";
+    Map<String, Object> properties = new LinkedHashMap<>();
+    properties.put("id", "verifiedProfileFields");
+    Response verifiedProfileJsonResponse =
+            cassandraOperation.getRecordsByProperties(
+                    JsonKey.SUNBIRD, JsonKey.SYSTEM_SETTINGS_DB, properties, context);
+    List<Map<String, Object>> existingDataList = (List<Map<String, Object>>) verifiedProfileJsonResponse.get(JsonKey.RESPONSE);
+    if (CollectionUtils.isNotEmpty(existingDataList)) {
+      Map<String, Object> data = existingDataList.get(0);
+      strSchema = (String) data.get(JsonKey.VALUE);
+    }
+    return strSchema;
   }
 
   private Map<String, List<String>> getUserOrgRoles(List<Map<String, Object>> userRolesList) {

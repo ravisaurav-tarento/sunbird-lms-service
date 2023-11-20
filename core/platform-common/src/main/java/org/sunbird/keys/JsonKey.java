@@ -637,6 +637,9 @@ public final class JsonKey {
   public static final String FORCE_MIGRATION = "forceMigration";
   public static final String SOFT_DELETE_PREVIOUS_ORG = "softDeleteOldOrg";
   public static final String OTP_EXPIRATION_TIME = "otpExpiryTime";
+  public static final String USER_READ_API_V2_MANDATORY_FIELDS = "user_read_api_v2_mandatory_fields";
+  public static final String USER_READ_API_V2_NON_MANDATORY_FIELDS = "user_read_api_v2_non_mandatory_fields";
+  public static final String PROFILE_UPDATE_COMPLETION = "profileUpdateCompletion";
 
   private JsonKey() {}
 }

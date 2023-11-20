@@ -1,19 +1,17 @@
 package org.sunbird.service.user;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.text.MessageFormat;
-import java.time.LocalDate;
-import java.util.*;
-import java.util.stream.Collectors;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.jclouds.json.Json;
 import org.sunbird.actor.organisation.validator.OrgTypeValidator;
+import org.sunbird.cassandra.CassandraOperation;
 import org.sunbird.exception.ProjectCommonException;
 import org.sunbird.exception.ResponseCode;
 import org.sunbird.exception.ResponseMessage;
+import org.sunbird.helper.ServiceFactory;
 import org.sunbird.keys.JsonKey;
 import org.sunbird.logging.LoggerUtil;
 import org.sunbird.operations.ActorOperations;
@@ -26,9 +24,13 @@ import org.sunbird.service.organisation.OrgService;
 import org.sunbird.service.organisation.impl.OrgServiceImpl;
 import org.sunbird.service.user.impl.*;
 import org.sunbird.util.*;
-import org.sunbird.util.user.ProfileUtil;
 import org.sunbird.util.user.UserTncUtil;
 import org.sunbird.util.user.UserUtil;
+
+import java.text.MessageFormat;
+import java.time.LocalDate;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class UserProfileReadService {
 
@@ -43,6 +45,8 @@ public class UserProfileReadService {
   private final UserExternalIdentityService userExternalIdentityService =
     UserExternalIdentityServiceImpl.getInstance();
   private final ObjectMapper mapper = new ObjectMapper();
+
+  private final CassandraOperation cassandraOperation = ServiceFactory.getInstance();
 
   public Response getUserProfileData(Request actorMessage) {
     String id = (String) actorMessage.getRequest().get(JsonKey.USER_ID);
@@ -139,10 +143,72 @@ public class UserProfileReadService {
     result.put(JsonKey.IDENTIFIER, userId);
 
     mapUserRoles(result);
-
+    
+    // Record the start time for measuring the execution time.
+    long startTime = System.currentTimeMillis();
+    // Convert the 'result' object to a JsonNode using the ObjectMapper.
+    JsonNode jsonNode = mapper.valueToTree(result);
+    // Extract mandatory and non-mandatory field paths from configuration and convert to lists.
+    List<String> mandatoryPathList = List.of(ProjectUtil.getConfigValue(JsonKey.USER_READ_API_V2_MANDATORY_FIELDS).split(","));
+    List<String> nonmandatoryPathList = List.of(ProjectUtil.getConfigValue(JsonKey.USER_READ_API_V2_NON_MANDATORY_FIELDS).split(","));
+    // Retrieve the list of non-null paths in the JSON data.
+    List<String> fieldsNonNullValueList=fetchNonNullJsonPaths("", jsonNode);
+    // Count the number of available mandatory fields that have non-null values.
+    long availableMandatoryFieldsCount = mandatoryPathList.stream()
+            .filter(fieldsNonNullValueList::contains)
+            .count();
+    // Count the number of available non-mandatory fields that have non-null values.
+    long availableNonMandatoryFieldsCount = nonmandatoryPathList.stream()
+            .filter(fieldsNonNullValueList::contains)
+            .count();
+    // Calculate the percentage of completion for mandatory and non-mandatory fields.
+    double mandatoryPercentage = 0.6 * ((double) availableMandatoryFieldsCount / mandatoryPathList.size());
+    double nonMandatoryPercentage = 0.4 * ((double) availableNonMandatoryFieldsCount / nonmandatoryPathList.size());
+    int profileUpdateCompletion = (int) ((mandatoryPercentage + nonMandatoryPercentage) * 100);
+    // Update the 'result' object with the calculated profile update completion percentage.
+    result.put(JsonKey.PROFILE_UPDATE_COMPLETION, profileUpdateCompletion);
+    // Record the end time and calculate the total execution time.
+    long endTime = System.currentTimeMillis();
+    long executionTime = endTime - startTime;
+    logger.info(actorMessage.getRequestContext(),"Execution time of the profile completion percentage :   " + executionTime + "   milliseconds");
     Response response = new Response();
     response.put(JsonKey.RESPONSE, result);
     return response;
+  }
+
+  /**
+   * Recursively traverses a JSON structure represented by a JsonNode and generates a list of
+   * JSON paths to non-null values.
+   *
+   * @param currentPath The current JSON path being processed. Initially an empty string.
+   * @param jsonNode    The JsonNode representing the current JSON structure.
+   * @return A List<String> containing paths to non-null values in the JSON structure.
+   */
+  private static List<String> fetchNonNullJsonPaths(String currentPath, JsonNode jsonNode) {
+    List<String> nonNullPaths = new ArrayList<>();
+    if (jsonNode.isObject()) {
+      jsonNode.fields().forEachRemaining(entry -> {
+        String key = entry.getKey();
+        JsonNode value = entry.getValue();
+        String newPath = currentPath.isEmpty() ? key : currentPath + "." + key;
+        if (!value.isNull()) {
+          nonNullPaths.add(newPath);
+        }
+        // Recursively call the method for the nested value.
+        nonNullPaths.addAll(fetchNonNullJsonPaths(newPath, value));
+      });
+    } else if (jsonNode.isArray()) {
+      for (int i = 0; i < jsonNode.size(); i++) {
+        String newPath = currentPath + "[" + i + "]";
+        JsonNode value = jsonNode.get(i);
+        if (!value.isNull()) {
+          nonNullPaths.add(newPath);
+        }
+        // Recursively call the method for the nested value.
+        nonNullPaths.addAll(fetchNonNullJsonPaths(newPath, value));
+      }
+    }
+    return nonNullPaths;
   }
 
   private Map<String, List<String>> getUserOrgRoles(List<Map<String, Object>> userRolesList) {

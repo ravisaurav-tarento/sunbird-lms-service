@@ -143,13 +143,11 @@ public class UserProfileReadService {
     result.put(JsonKey.IDENTIFIER, userId);
 
     mapUserRoles(result);
-
-    // Create an instance of ObjectMapper for JSON processing.
-    ObjectMapper objectMapper = new ObjectMapper();
+    
     // Record the start time for measuring the execution time.
     long startTime = System.currentTimeMillis();
     // Convert the 'result' object to a JsonNode using the ObjectMapper.
-    JsonNode jsonNode = objectMapper.valueToTree(result);
+    JsonNode jsonNode = mapper.valueToTree(result);
     // Extract mandatory and non-mandatory field paths from configuration and convert to lists.
     List<String> mandatoryPathList = List.of(ProjectUtil.getConfigValue(JsonKey.USER_READ_API_V2_MANDATORY_FIELDS).split(","));
     List<String> nonmandatoryPathList = List.of(ProjectUtil.getConfigValue(JsonKey.USER_READ_API_V2_NON_MANDATORY_FIELDS).split(","));

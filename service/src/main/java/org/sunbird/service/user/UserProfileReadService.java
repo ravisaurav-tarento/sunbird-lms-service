@@ -171,6 +171,12 @@ public class UserProfileReadService {
     long endTime = System.currentTimeMillis();
     long executionTime = endTime - startTime;
     logger.info(actorMessage.getRequestContext(),"Execution time of the profile completion percentage :   " + executionTime + "   milliseconds");
+    logger.info(actorMessage.getRequestContext(), "List of mandatoryPathList :   " + mandatoryPathList);
+    logger.info(actorMessage.getRequestContext(), "Size of available mandatory fields count :   " + availableMandatoryFieldsCount);
+    logger.info(actorMessage.getRequestContext(), "List of nonmandatoryPathList :   " + nonmandatoryPathList);
+    logger.info(actorMessage.getRequestContext(), "Size of available non mandatory fields count:   " + availableNonMandatoryFieldsCount);
+    logger.info(actorMessage.getRequestContext(), "ProfileUpdateCompletion:   " + profileUpdateCompletion);
+
     Response response = new Response();
     response.put(JsonKey.RESPONSE, result);
     return response;

@@ -197,7 +197,7 @@ public class UserProfileReadService {
         String key = entry.getKey();
         JsonNode value = entry.getValue();
         String newPath = currentPath.isEmpty() ? key : currentPath + "." + key;
-        if (!value.isNull()) {
+        if ((value.isTextual() && !value.isNull() && !value.textValue().isEmpty()) || value.isBoolean()) {
           nonNullPaths.add(newPath);
         }
         // Recursively call the method for the nested value.
@@ -207,7 +207,7 @@ public class UserProfileReadService {
       for (int i = 0; i < jsonNode.size(); i++) {
         String newPath = currentPath + "[" + i + "]";
         JsonNode value = jsonNode.get(i);
-        if (!value.isNull()) {
+        if ((value.isTextual() && !value.isNull() && !value.textValue().isEmpty()) || value.isBoolean()) {
           nonNullPaths.add(newPath);
         }
         // Recursively call the method for the nested value.

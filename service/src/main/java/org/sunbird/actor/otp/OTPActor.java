@@ -130,7 +130,7 @@ public class OTPActor extends BaseActor {
       ProjectCommonException.throwClientErrorException(ResponseCode.errorOTPExpired);
     }
     int remainingCount = getRemainingAttemptedCount(otpDetails);
-    if (remainingCount <= 0) {
+    if (remainingCount < 0) {
       logger.info(
               request.getRequestContext(),
               "OTP_VALIDATION_FAILED:OTPActor:verifyOTP: Attempts Exceeded For The OTP = "
@@ -184,10 +184,8 @@ public class OTPActor extends BaseActor {
             + ",remaining attempt is "
             + remainingCount);
     int attemptedCount = (int) otpDetails.get(JsonKey.ATTEMPTED_COUNT);
-    if (remainingCount > 0) {
-      otpDetails.put(JsonKey.ATTEMPTED_COUNT, attemptedCount + 1);
-      otpService.updateAttemptCount(otpDetails, context);
-    }
+    otpDetails.put(JsonKey.ATTEMPTED_COUNT, attemptedCount + 1);
+    otpService.updateAttemptCount(otpDetails, context);
     ProjectCommonException ex =
         new ProjectCommonException(
             ResponseCode.otpVerificationFailed,
@@ -211,7 +209,7 @@ public class OTPActor extends BaseActor {
   private int getRemainingAttemptedCount(Map<String, Object> otpDetails) {
     int allowedAttempt = Integer.parseInt(ProjectUtil.getConfigValue(SUNBIRD_OTP_ALLOWED_ATTEMPT));
     int attemptedCount = (int) otpDetails.get(JsonKey.ATTEMPTED_COUNT);
-    return (allowedAttempt - attemptedCount);
+    return (allowedAttempt - (attemptedCount + 1));
   }
 
   private void sendOTP(Request request, String otp, String key, RequestContext context) {

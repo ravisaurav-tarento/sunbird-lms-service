@@ -153,6 +153,14 @@ public class UserProfileReadService {
     List<String> nonmandatoryPathList = List.of(ProjectUtil.getConfigValue(JsonKey.USER_READ_API_V2_NON_MANDATORY_FIELDS).split(","));
     // Retrieve the list of non-null paths in the JSON data.
     List<String> fieldsNonNullValueList=fetchNonNullJsonPaths("", jsonNode);
+
+    List<String> missingFields = mandatoryPathList.stream()
+            .filter(field -> !fieldsNonNullValueList.contains(field))
+            .collect(Collectors.toList());
+    List<String> missingnonmanFields = nonmandatoryPathList.stream()
+            .filter(field -> !fieldsNonNullValueList.contains(field))
+            .collect(Collectors.toList());
+
     // Count the number of available mandatory fields that have non-null values.
     long availableMandatoryFieldsCount = mandatoryPathList.stream()
             .filter(fieldsNonNullValueList::contains)
@@ -176,6 +184,9 @@ public class UserProfileReadService {
     logger.info(actorMessage.getRequestContext(), "List of nonmandatoryPathList :   " + nonmandatoryPathList);
     logger.info(actorMessage.getRequestContext(), "Size of available non mandatory fields count:   " + availableNonMandatoryFieldsCount);
     logger.info(actorMessage.getRequestContext(), "ProfileUpdateCompletion:   " + profileUpdateCompletion);
+    logger.info(actorMessage.getRequestContext(), "Missing mandatory fields:   " + missingFields);
+    logger.info(actorMessage.getRequestContext(), "Missing non mandatory fields:   " + missingnonmanFields);
+
 
     Response response = new Response();
     response.put(JsonKey.RESPONSE, result);

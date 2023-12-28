@@ -640,7 +640,6 @@ public final class JsonKey {
   public static final String USER_READ_API_V2_MANDATORY_FIELDS = "user_read_api_v2_mandatory_fields";
   public static final String USER_READ_API_V2_NON_MANDATORY_FIELDS = "user_read_api_v2_non_mandatory_fields";
   public static final String PROFILE_UPDATE_COMPLETION = "profileUpdateCompletion";
-  public static final String USER_LOGINS = "user_logins";
   public static final String LAST_LOGIN = "last_login";
   public static final String FIRST_LOGIN = "first_login";
   public static final String EDATA = "edata";

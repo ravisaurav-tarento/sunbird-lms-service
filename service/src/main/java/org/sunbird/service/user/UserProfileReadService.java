@@ -743,18 +743,19 @@ public class UserProfileReadService {
         Map<String, Object> map1 = new HashMap<>();
         map1.putIfAbsent(JsonKey.ID, userId);
         Response response = cassandraOperation.getRecordsByProperties(JsonKey.SUNBIRD, JsonKey.USER, map1, actorMessage.getRequestContext());
-        Map<String, Object> trymap = new HashMap<>();
+        Map<String, Object> userDetailsMap = new HashMap<>();
         List<Map<String, Object>> list = (List<Map<String, Object>>) response.get(JsonKey.RESPONSE);
-        list.forEach(a -> a.forEach(trymap::putIfAbsent));
+        list.forEach(a -> a.forEach(userDetailsMap::putIfAbsent));
         Map<String, Object> map = new HashMap<>();
-        if (trymap.get("first_login") == null) {
+        if (userDetailsMap.get("first_login") == null) {
             map.put(JsonKey.ID, userId);
             map.put(JsonKey.LAST_LOGIN, new Timestamp(Calendar.getInstance().getTime().getTime()));
             map.put(JsonKey.FIRST_LOGIN, new Timestamp(Calendar.getInstance().getTime().getTime()));
             cassandraOperation.upsertRecord(JsonKey.SUNBIRD, JsonKey.USER, map, actorMessage.getRequestContext());
             Map<String, Object> data = new HashMap<>();
             data.put(JsonKey.EDATA, map);
-            InstructionEventGenerator.pushInstructionEvent("user_first_login_topic", data);
+            String topic =ProjectUtil.getConfigValue("kafka_user_first_login_event_topic");
+            InstructionEventGenerator.pushInstructionEvent(topic, data);
         } else {
             map.put(JsonKey.ID, userId);
             map.put(JsonKey.LAST_LOGIN, new Timestamp(Calendar.getInstance().getTime().getTime()));

@@ -739,7 +739,7 @@ public class UserProfileReadService {
   }
 
     public Response getUserLoggedInDetails(Request actorMessage) throws Exception {
-        String userId = (String) actorMessage.getRequest().get(JsonKey.USER_ID);
+        String userId = (String) actorMessage.getContext().get("requestedBy");
         Map<String, Object> map1 = new HashMap<>();
         map1.putIfAbsent(JsonKey.ID, userId);
         Response response = cassandraOperation.getRecordsByProperties(JsonKey.SUNBIRD, JsonKey.USER, map1, actorMessage.getRequestContext());

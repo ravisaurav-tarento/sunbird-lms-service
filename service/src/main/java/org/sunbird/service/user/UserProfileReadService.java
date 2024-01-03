@@ -760,7 +760,11 @@ public class UserProfileReadService {
             map.put(JsonKey.ID, userId);
             map.put(JsonKey.LAST_LOGIN, new Timestamp(Calendar.getInstance().getTime().getTime()));
             cassandraOperation.upsertRecord(JsonKey.SUNBIRD, JsonKey.USER, map, actorMessage.getRequestContext());
+            map.put(JsonKey.FIRST_LOGIN,userDetailsMap.get("first_login"));
         }
-        return null;
+        response.put("first_login",map.get(JsonKey.FIRST_LOGIN));
+        response.put("last_login",map.get(JsonKey.LAST_LOGIN));
+        response.put("user_id",userId);
+        return response;
     }
 }

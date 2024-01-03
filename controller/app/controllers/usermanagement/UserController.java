@@ -486,7 +486,7 @@ public class UserController extends BaseController {
         httpRequest);
   }
 
-    public CompletionStage<Result> getUserLoggedInDetails(String userId, Http.Request httpRequest) {
+    public CompletionStage<Result> getUserLoggedInDetails(Http.Request httpRequest) {
         return handleGetUserProfileV3(
                 ActorOperations.GET_USER_LOGIN_V1.getValue(),
                 null,

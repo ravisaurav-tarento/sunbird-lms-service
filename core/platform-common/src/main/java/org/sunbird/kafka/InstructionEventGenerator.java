@@ -105,7 +105,7 @@ public class InstructionEventGenerator {
     return jsonMessage;
   }
 
-  public static void createCourseEnrolmentEvent(String key, String topic, Map<String, Object> data) throws Exception {
+  public static void createFirstLoginDetailsEvent(String key, String topic, Map<String, Object> data) throws Exception {
     String courseEnrolEvent = formEventData(data);
     if (StringUtils.isBlank(courseEnrolEvent)) {
       throw new ProjectCommonException(ResponseCode.valueOf("BE_JOB_REQUEST_EXCEPTION"), "Event is not generated properly.", ResponseCode.CLIENT_ERROR.getResponseCode());

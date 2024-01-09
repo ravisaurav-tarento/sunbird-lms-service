@@ -759,7 +759,7 @@ public class UserProfileReadService {
         requestMap.put(JsonKey.FIRST_LOGIN, map.get(JsonKey.FIRST_LOGIN));
         dataMap.put("edata", requestMap);
         String topic = ProjectUtil.getConfigValue("kafka_user_first_login_event_topic");
-        InstructionEventGenerator.createCourseEnrolmentEvent("", topic, dataMap);
+        InstructionEventGenerator.createFirstLoginDetailsEvent("", topic, dataMap);
       } else {
             map.put(JsonKey.ID, userId);
             map.put(JsonKey.LAST_LOGIN, new Timestamp(Calendar.getInstance().getTime().getTime()));

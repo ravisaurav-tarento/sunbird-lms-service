@@ -747,16 +747,20 @@ public class UserProfileReadService {
         List<Map<String, Object>> list = (List<Map<String, Object>>) response.get(JsonKey.RESPONSE);
         list.forEach(a -> a.forEach(userDetailsMap::putIfAbsent));
         Map<String, Object> map = new HashMap<>();
-        if (userDetailsMap.get("first_login") == null) {
-            map.put(JsonKey.ID, userId);
-            map.put(JsonKey.LAST_LOGIN, new Timestamp(Calendar.getInstance().getTime().getTime()));
-            map.put(JsonKey.FIRST_LOGIN, new Timestamp(Calendar.getInstance().getTime().getTime()));
-            cassandraOperation.upsertRecord(JsonKey.SUNBIRD, JsonKey.USER, map, actorMessage.getRequestContext());
-            Map<String, Object> data = new HashMap<>();
-            data.put(JsonKey.EDATA, map);
-            String topic =ProjectUtil.getConfigValue("kafka_user_first_login_event_topic");
-            InstructionEventGenerator.pushInstructionEvent(topic, data);
-        } else {
+      if (userDetailsMap.get("first_login") == null) {
+        map.put(JsonKey.ID, userId);
+        map.put(JsonKey.LAST_LOGIN, new Timestamp(Calendar.getInstance().getTime().getTime()));
+        map.put(JsonKey.FIRST_LOGIN, new Timestamp(Calendar.getInstance().getTime().getTime()));
+        cassandraOperation.upsertRecord(JsonKey.SUNBIRD, JsonKey.USER, map, actorMessage.getRequestContext());
+        Map<String, Object> dataMap = new HashMap<>();
+        Map<String, Object> requestMap = new HashMap<>();
+        requestMap.put(JsonKey.ID, map.get(JsonKey.ID));
+        requestMap.put(JsonKey.LAST_LOGIN, map.get(JsonKey.LAST_LOGIN));
+        requestMap.put(JsonKey.FIRST_LOGIN, map.get(JsonKey.FIRST_LOGIN));
+        dataMap.put("edata", requestMap);
+        String topic = ProjectUtil.getConfigValue("kafka_user_first_login_event_topic");
+        InstructionEventGenerator.createCourseEnrolmentEvent("", topic, dataMap);
+      } else {
             map.put(JsonKey.ID, userId);
             map.put(JsonKey.LAST_LOGIN, new Timestamp(Calendar.getInstance().getTime().getTime()));
             cassandraOperation.upsertRecord(JsonKey.SUNBIRD, JsonKey.USER, map, actorMessage.getRequestContext());

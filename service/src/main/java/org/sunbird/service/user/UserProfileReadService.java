@@ -746,7 +746,12 @@ public class UserProfileReadService {
         Map<String, Object> userDetailsMap = new HashMap<>();
         List<Map<String, Object>> list = (List<Map<String, Object>>) response.get(JsonKey.RESPONSE);
         list.forEach(a -> a.forEach(userDetailsMap::putIfAbsent));
-        Map<String, Object> map = new HashMap<>();
+        list.forEach(map ->
+                map.forEach((key, value) ->
+                        userDetailsMap.putIfAbsent(key.toLowerCase(), value)
+                )
+        );
+      Map<String, Object> map = new HashMap<>();
       if (userDetailsMap.get("first_login") == null) {
         map.put(JsonKey.ID, userId);
         map.put(JsonKey.LAST_LOGIN, new Timestamp(Calendar.getInstance().getTime().getTime()));
@@ -757,18 +762,20 @@ public class UserProfileReadService {
         requestMap.put(JsonKey.ID, map.get(JsonKey.ID));
         requestMap.put(JsonKey.LAST_LOGIN, map.get(JsonKey.LAST_LOGIN));
         requestMap.put(JsonKey.FIRST_LOGIN, map.get(JsonKey.FIRST_LOGIN));
-        dataMap.put("edata", requestMap);
+        requestMap.put(JsonKey.SELF_REGISTRATION, userDetailsMap.get(JsonKey.CREATEDBY) == null);
+        dataMap.put(JsonKey.EDATA, requestMap);
         String topic = ProjectUtil.getConfigValue("kafka_user_first_login_event_topic");
         InstructionEventGenerator.createFirstLoginDetailsEvent("", topic, dataMap);
       } else {
             map.put(JsonKey.ID, userId);
             map.put(JsonKey.LAST_LOGIN, new Timestamp(Calendar.getInstance().getTime().getTime()));
             cassandraOperation.upsertRecord(JsonKey.SUNBIRD, JsonKey.USER, map, actorMessage.getRequestContext());
-            map.put(JsonKey.FIRST_LOGIN,userDetailsMap.get("first_login"));
+            map.put(JsonKey.FIRST_LOGIN,userDetailsMap.get(JsonKey.FIRST_LOGIN));
         }
-        response.put("first_login",map.get(JsonKey.FIRST_LOGIN));
-        response.put("last_login",map.get(JsonKey.LAST_LOGIN));
-        response.put("user_id",userId);
+        response.put(JsonKey.FIRST_LOGIN,map.get(JsonKey.FIRST_LOGIN));
+        response.put(JsonKey.LAST_LOGIN,map.get(JsonKey.LAST_LOGIN));
+        response.put(JsonKey.CONSENT_USER_ID,userId);
+        response.put(JsonKey.SELF_REGISTRATION,userDetailsMap.get(JsonKey.CREATEDBY) == null);
         return response;
     }
 }

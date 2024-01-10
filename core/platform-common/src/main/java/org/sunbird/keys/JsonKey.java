@@ -644,5 +644,7 @@ public final class JsonKey {
   public static final String FIRST_LOGIN = "first_login";
   public static final String EDATA = "edata";
 
+  public static final String SELF_REGISTRATION = "self_registration";
+  public static final String CREATEDBY = "createdby";
   private JsonKey() {}
 }

@@ -37,6 +37,8 @@ public class Organisation implements Serializable {
   private Boolean isSSOEnabled;
   private Boolean isTenant;
   private List<Map<String, String>> orgLocation;
+  private String frameworkId;
+  private String imgUrl;
 
   public String getId() {
     return id;
@@ -194,5 +196,17 @@ public class Organisation implements Serializable {
 
   public void setOrgLocation(List<Map<String, String>> orgLocation) {
     this.orgLocation = orgLocation;
+  }
+
+  public String getFrameworkId() { return frameworkId; }
+
+  public void setFrameworkId(String frameworkId) { this.frameworkId = frameworkId; }
+
+  public String getImgUrl() {
+    return imgUrl;
+  }
+
+  public void setImgUrl(String imgUrl) {
+    this.imgUrl = imgUrl;
   }
 }

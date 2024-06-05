@@ -460,7 +460,7 @@ public class ElasticSearchRestHighImpl implements ElasticSearchService {
             + index
             + ", with query = "
             + searchSourceBuilder.toString());
-    System.out.println("printing es query "+searchSourceBuilder.toString());
+
     searchRequest.source(searchSourceBuilder);
     Promise<Map<String, Object>> promise = Futures.promise();
 

@@ -112,7 +112,7 @@ public interface ResponseMessage {
     String ROLE_PROCESSING_INVALID_ORG = "Error while processing assign role. Invalid Organisation Id";
     String ERROR_OTP_EXPIRED = "Time Limit for OTP Exceeded, Please Try Again.";
     String ERROR_OTP_ATTEMPT_EXCEEDED = "The maximum number of attempts for OTP verification has been exceeded. Please try again.";
-    String ERROR_PARAM_EXISTS_FORMATTED = "{0} is already registered with an existing User";
+    String ERROR_PARAM_EXISTS_FORMATTED = "This {0} is already registered with an existing User";
   }
 
   interface Key {
